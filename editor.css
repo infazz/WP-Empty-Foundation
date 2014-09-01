@@ -1,0 +1,47 @@
+.entry h1, h1{
+	font-size: 28px;
+}
+.entry h2, h2{
+	font-size: 25px;
+}
+.entry h3, h3{
+	font-size: 22px;
+}
+.entry h4, h4 {
+  font-size: 18px;
+}
+
+.entry h5, h5 {
+  font-size: 16px;
+}
+.entry h6, h6 {
+  font-size: 15px;
+}
+
+
+h1, h2,  h3, h4, h5, h6{
+	padding: 11px 0;
+	margin: 5px 0;
+}
+
+ul{
+	list-style: disc;
+}
+ul li{
+	margin: 4px 0 4px 20px;
+}
+
+ol li{
+	margin: 4px 0 4px 20px;
+}
+
+blockquote {
+  border-left: 5px solid #B5BF00;
+  margin-bottom: 15px;
+  padding-left: 12px;
+}
+
+table td {
+  vertical-align: middle;
+  height: 20px;
+}
