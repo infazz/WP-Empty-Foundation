@@ -1,4 +1,4 @@
-# WordPress Starter Foundation Compass Template
+# WordPress Starter Foundation Template
 
 
 ## Includes
