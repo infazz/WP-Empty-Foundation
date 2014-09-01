@@ -1,6 +1,10 @@
-# Foundation Compass Template
+# WordPress Starter Foundation Compass Template
 
-The easiest way to get started with Foundation + Compass.
+
+## Includes
+	
+	* Fancybox
+
 
 ## Requirements
 

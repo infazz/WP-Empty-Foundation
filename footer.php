@@ -4,14 +4,14 @@
 
 	</section>
 
-	<?php wp_footer(); ?>
+<?php wp_footer(); ?>
 
+<script src="<?php bloginfo('template_directory'); ?>/bower_components/foundation/js/foundation.min.js"></script>
+<script src="<?php bloginfo('template_directory'); ?>/js/jquery.mousewheel-3.0.6.pack.js"></script>
+<script src="<?php bloginfo('template_directory'); ?>/js/jquery.fancybox.js"></script>
+<script src="<?php bloginfo('template_directory'); ?>/js/jquery.fancybox-media.js"></script>
 
-<!-- here comes the javascript -->
-
-<!-- jQuery is called via the Wordpress-friendly way via functions.php -->
-
-<!-- this is where we put our custom functions -->
+<script src="<?php bloginfo('template_directory'); ?>/js/app.js"></script>
 <script src="<?php bloginfo('template_directory'); ?>/js/functions.js"></script>
 
 <!-- Asynchronous google analytics; this is the official snippet.
