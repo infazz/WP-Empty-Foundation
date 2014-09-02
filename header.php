@@ -87,13 +87,7 @@
 		<header id="header">
 			<h1><a href="<?php echo get_option('home'); ?>/"><?php bloginfo('name'); ?></a></h1>
 			<div class="description"><?php bloginfo('description'); ?></div>
-			
-			<div class="lang">
-					<a href="<?php echo $options['est']; ?>" <?php if($options['currlang'] == 'estc') echo ' class="active"'; ?>>EST</a>
-					<a href="<?php echo $options['ru']; ?>" <?php if($options['currlang'] == 'ruc') echo ' class="active"'; ?>>RUS</a>
-					<a href="<?php echo $options['eng']; ?>" <?php if($options['currlang'] == 'engc') echo ' class="active"'; ?>>ENG</a>
-					<a href="<?php echo $options['fi']; ?>" <?php if($options['currlang'] == 'fic') echo ' class="active"'; ?>>FIN</a>
-			</div>
+
 			
 			<?php wp_nav_menu( array( 'depth' => 6, 'sort_column' => 'menu_order', 'container' => 'ul', 'menu_id' => 'main-nav', 'menu_class' => 'nav', 'theme_location' => 'top-menu' ) ); ?>
 		</header>
