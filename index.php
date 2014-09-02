@@ -6,10 +6,9 @@
 
 			<h2><a href="<?php the_permalink() ?>"><?php the_title(); ?></a></h2>
 
-			<?php include (TEMPLATEPATH . '/inc/meta.php' ); ?>
-
 			<div class="entry">
 				<?php the_content(); ?>
+				<?php _e('Name'); ?>
 			</div>
 
 			<footer class="postmetadata">
@@ -22,7 +21,6 @@
 
 	<?php endwhile; ?>
 
-	<?php include (TEMPLATEPATH . '/inc/nav.php' ); ?>
 
 	<?php else : ?>
 

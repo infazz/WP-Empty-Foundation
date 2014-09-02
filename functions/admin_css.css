@@ -1,0 +1,174 @@
+#adminmenu .wp-menu-image img {
+  opacity: 1 !important;
+  padding: 8px 0 0 !important;
+  width: 50%;
+}
+
+/* Tabs */
+.tabs {
+    margin: 1px 0 20px 0;
+}
+
+.tabs .tab-wrapper {
+    border: 1px solid #dddddd;
+    border-radius: 0 5px 5px 5px;
+    -moz-border-radius: 0 5px 5px 5px;
+    -webkit-border-radius: 0 5px 5px 5px;
+    margin: -1px 0 0 0;
+}
+
+.tabs .tab-menu ul {
+    list-style: none;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.tabs .tab-menu li {
+    display: inline;
+    float: left;
+    margin: 0;
+    padding: 0;
+}
+
+.tabs .tab-menu a {
+    background-color: #fafafa;
+    border: 1px solid #dddddd;
+    border-radius: 5px 5px 0 0;
+    -moz-border-radius: 5px 5px 0 0;
+    -webkit-border-radius: 5px 5px 0 0;
+    color: #aaaaaa;
+    display: block;
+    font-size: 12px;
+    letter-spacing: 1px;
+    margin: 0 2px 0 0;
+    padding: 8px 20px;
+	text-transform: uppercase;
+	text-decoration: none;
+}
+
+.tabs .tab-menu a:hover {
+    background-color: #f2f2f2;
+    color: #666666;
+}
+
+.tabs .tab-menu a.active {
+    background-color: #ffffff;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#f6f6f6', endColorstr='#fafafa');
+    background: -moz-linear-gradient(bottom , #fafafa 0px, #f6f6f6 90%) repeat scroll 0 0 transparent;
+    background: -webkit-gradient(linear,left bottom,left top, color-stop(0, #fafafa),color-stop(90%, #f6f6f6));
+    border-bottom: none;
+    color: #666666;
+    padding: 8px 20px 9px 20px;
+	font-weight: bold;
+}
+
+.tabs .tab {
+	background-color: #fafafa;
+	border-radius: 0 5px 5px 5px;
+    -moz-border-radius: 0 5px 5px 5px;
+    -webkit-border-radius: 0 5px 5px 5px;
+    padding: 20px;
+}
+
+
+.tabs .row {
+  margin: 5px 0 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px dotted #cecece;
+}
+
+.tabs .row label{
+  display: block;
+  float: left;
+  padding: 3px 0;
+  width: 175px;
+}
+
+
+/* Toggle */
+.toggle {
+    padding: 0 0 1px 0;
+}
+
+.toggle:nth-child(even) .trigger {
+	background: #F5F5F5
+}
+.toggle:nth-child(odd) .trigger {
+	background: #EFEFEF
+}
+
+.toggle .trigger {
+  background: none repeat scroll 0 0 #EFEFEF;
+  color: #272727;
+  display: block;
+  font-size: 24px;
+  padding: 33px 50px;
+  position: relative;
+  text-decoration: none;
+  text-shadow: 0 1px 0 #FFFFFF;
+}
+
+.toggle .trigger span {
+	background: url(i/arrowsvert.png) center bottom no-repeat;
+	display: block;
+	position: absolute;
+	top: 33px;
+	right: 50px;
+	text-indent: -9999px;
+	width: 37px;
+	height: 25px;
+}
+
+.toggle .trigger:hover,
+.toggle .active {
+	color:#1E873B;
+}
+.toggle .active span, .toggle:hover span {
+	background-position: center top;
+}
+
+.toggle .box {
+
+	padding: 30px;
+	display: none;
+}
+
+.mceIframeContainer iframe{
+	min-height:  200px;
+}
+
+.form-table th {
+  width: 140px !important;
+}
+
+h3.qtrans_title{
+  padding: 2px 12px !important;
+}
+.qtrans_title_wrap{
+  border:  none !important;
+  padding:  0 !important;
+  margin-bottom:  5px;
+}
+.qtrans_title_input {
+  padding: 2px 10px !important;
+  border-radius: 6px;
+}
+
+#edit-slug-box{
+  margin-bottom:  10px;
+}
+
+.contactcol1,
+.contactcol2,
+.contactcol3,
+.contactcol4,
+.contactcol5 {
+	width:  100% !important;
+	height:  50px;
+}
+
+.themeOptions th span{
+	color: #666666;
+    font-size: 11px;
+    font-weight: normal;
+}

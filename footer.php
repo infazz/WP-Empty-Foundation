@@ -2,7 +2,6 @@
 			<small>&copy;<?php echo date("Y"); echo " "; bloginfo('name'); ?></small>
 		</footer>
 
-	</section>
 
 <?php wp_footer(); ?>
 

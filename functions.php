@@ -1,7 +1,8 @@
 <?php
 	$functions_path = TEMPLATEPATH . '/functions/';	
 	require_once ( TEMPLATEPATH . '/options/options.php' );
-	
+
+	$lang_arr = qtrans_getSortedLanguages();	
 
 	add_action( 'after_setup_theme', 're_setup_template' );
 	function re_setup_template(){
@@ -13,6 +14,33 @@
 
 		register_nav_menus( array( 'top-menu' => __( 'Top Menu', 'desadent' ) ) );
 	}
+
+
+    
+    if (function_exists('register_sidebar')) {
+		
+		foreach($lang_arr as $lang){
+			register_sidebar(array(
+	    		'name' => __('('.$lang.') Homepage Widgets','html5reset' ),
+	    		'id'   => 'sidebar-widgets-'.$lang,
+	    		'description'   => __( 'These are widgets for the homepage.','html5reset' ),
+	    		'before_widget' => '<div id="%1$s" class="widget %2$s">',
+	    		'after_widget'  => '</div>',
+	    		'before_title'  => '<h2>',
+	    		'after_title'   => '</h2>'
+	    	));
+		}
+
+    }
+
+    add_action('admin_init', 'rebrand_admin_JS_init_method');
+	function rebrand_admin_JS_init_method() {
+
+		wp_enqueue_script('adminjs', get_template_directory_uri() . '/functions/admin_js.js', 'jquery', false);
+		wp_enqueue_style('adminjs', get_template_directory_uri() . '/functions/admin_css.css', 'jquery', false);
+		
+	}
+
 	
 	// Add RSS links to <head> section
 	automatic_feed_links();
@@ -50,7 +78,7 @@
 	add_action( 'get_header', 'mighty_enqueue_head_scripts' );
 	if ( !function_exists( 'mighty_enqueue_head_scripts' ) ) {
 		function mighty_enqueue_head_scripts() {
-			wp_enqueue_style( 'fancybox', get_bloginfo('template_url')."/stylesheets/jquery.fancybox.css", FALSE, '1.0' ); 
+			wp_enqueue_style( 'fancybox', get_bloginfo('template_url')."/css/jquery.fancybox.css", FALSE, '1.0' ); 
 		
 		}
 	}
@@ -132,18 +160,7 @@
     }
     add_action('init', 'removeHeadLinks');
     remove_action('wp_head', 'wp_generator');
-    
-    if (function_exists('register_sidebar')) {
-    	register_sidebar(array(
-    		'name' => __('Sidebar Widgets','html5reset' ),
-    		'id'   => 'sidebar-widgets',
-    		'description'   => __( 'These are widgets for the sidebar.','html5reset' ),
-    		'before_widget' => '<div id="%1$s" class="widget %2$s">',
-    		'after_widget'  => '</div>',
-    		'before_title'  => '<h2>',
-    		'after_title'   => '</h2>'
-    	));
-    }
+
     
     //add_theme_support( 'post-formats', array('aside', 'gallery', 'link', 'image', 'quote', 'status', 'audio', 'chat', 'video')); // Add 3.1 post format theme support.
 
@@ -320,5 +337,38 @@
 	
 	
 		return $translated_text;
+	}
+
+	function _t($val){
+		$txt = get_option( 're_opt' ); 
+		if( function_exists('qtrans_getLanguage')){
+			$lang = qtrans_getLanguage();
+		}else{
+			$lang = '';
+		}
+		//use  
+		echo $txt[$val.'_'.$lang];
+	}
+
+	function __t($val){
+		$txt = get_option( 're_opt' ); 
+		if( function_exists('qtrans_getLanguage')){
+			$lang = qtrans_getLanguage();
+		}else{
+			$lang = '';
+		}
+		//use  
+		return $txt[$val.'_'.$lang];
+	}
+
+
+
+	add_filter( 'gettext', 'theme_gettext_fields', 20, 3 );
+	function theme_gettext_fields( $translated_text, $text, $domain ) {
+
+		$newtext = __t( sanitize_title($text) );
+		if( !empty($newtext) and $newtext != $text ) $translated_text = $newtext;
+
+   	 	return $translated_text;
 	}
 ?>
