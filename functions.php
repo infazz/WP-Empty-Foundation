@@ -2,15 +2,17 @@
 	$functions_path = TEMPLATEPATH . '/functions/';	
 	require_once ( TEMPLATEPATH . '/options/options.php' );
 	
-	add_theme_support( 'post-thumbnails' );
-	
-	//add_image_size( 'work', $width, $height, $crop );
-	$crop = true;
-	add_image_size( 'tiny', 80, 50, $crop );
-	add_image_size( 'thumb', 200, 200, $crop );
-	add_image_size( 'preview', 765, 505, $crop );
 
-	register_nav_menus( array( 'top-menu' => __( 'Top Menu', 'desadent' ) ) );
+	add_action( 'after_setup_theme', 're_setup_template' );
+	function re_setup_template(){
+		add_theme_support( 'post-thumbnails' );
+		
+		add_image_size( 'tiny', 80, 50, $crop );
+		add_image_size( 'thumb', 200, 200, $crop );
+		add_image_size( 'preview', 765, 505, $crop );
+
+		register_nav_menus( array( 'top-menu' => __( 'Top Menu', 'desadent' ) ) );
+	}
 	
 	// Add RSS links to <head> section
 	automatic_feed_links();
@@ -40,22 +42,34 @@
 	    $variable = mysql_real_escape_string(trim($variable));
 	    return $variable;
 	}
-	
-	// Load jQuery
-	if ( !function_exists(core_mods) ) {
-		function core_mods() {
-			if ( !is_admin() ) {
-				//wp_deregister_script('jquery');
-				//wp_register_script('jquery', ("//ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"), false);
-				wp_enqueue_script('jquery');
-				
-				
-				wp_enqueue_script('easing', get_template_directory_uri() . '/js/easing.js', 'jquery', false);
-				wp_enqueue_script('theme-slides', get_bloginfo('template_url').'/js/slides.js', 'slides');
-			}
+
+
+	add_action( 'get_header', 'mighty_enqueue_head_scripts' );
+	if ( !function_exists( 'mighty_enqueue_head_scripts' ) ) {
+		function mighty_enqueue_head_scripts() {
+			wp_enqueue_style( 'fancybox', get_bloginfo('template_url')."/stylesheets/jquery.fancybox.css", FALSE, '1.0' ); 
+		
 		}
-		core_mods();
 	}
+	
+	
+	add_action('get_footer', 'rebrand_JS_init_method');
+	function rebrand_JS_init_method() {
+		// Load jQuery
+		if ( !is_admin() ) {
+			wp_enqueue_script('jquery');
+			
+				
+			wp_enqueue_script('easing', get_template_directory_uri() . '/js/easing.js', 'jquery', false);
+			wp_enqueue_script('theme-slides', get_bloginfo('template_url').'/js/slides.js', 'slides');
+			
+			//if( current_user_can('manage_options') ) wp_enqueue_script('theme-slides', get_bloginfo('template_url').'/js/admin_func.js', 'slides');
+		}
+	}
+
+
+
+
 	// Removes from admin bar
 	function mytheme_admin_bar_render() {
 		global $wp_admin_bar;
