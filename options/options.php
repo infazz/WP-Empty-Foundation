@@ -82,134 +82,91 @@ function theme_options_do_page() {
 	}
 	
 
-	if(isset($_GET['gettext']) and $_GET['gettext'] == 'update'){
+	function trimRest2($rest){
+    	$rest = str_replace("_e('","",$rest);
+    	$rest = str_replace("_e( '","",$rest);
+    	$rest = str_replace("__('","",$rest);
+    	$rest = str_replace("__( '","",$rest);
+    	$rest = str_replace("')","",$rest);
+    	$rest = str_replace("' )","",$rest);
+    	$rest = str_replace("', '","','",$rest);
+    	$rest = explode("','", $rest);
+    	return $rest;
+	}
+
+	function in_array_r($needle, $haystack, $strict = false) {
+	    foreach ($haystack as $item) {
+	        if (($strict ? $item === $needle : $item == $needle) || (is_array($item) && in_array_r($needle, $item, $strict))) {
+	            return true;
+	        }
+	    }
+
+	    return false;
+	}
+
+	if(isset($_POST['gettext']) and $_POST['gettext'] == 'update'){
 		$path    = TEMPLATEPATH;
 		
-		
 		$gettext = array();
-
 		$find = array( "_e(", "__(" );
-
-	/*
-		function findString($path,$find){
-		    $return='';
-		    ob_start();
-		    if ($handle = opendir($path)) {
-		        while (false !== ($file = readdir($handle))) {
-		            if ($file != "." && $file != "..") {
-		                if(is_dir($path.'/'.$file)){
-		                    $sub=findString($path.'/'.$file,$find);
-		                    if(isset($sub)){
-		                        echo $sub.PHP_EOL;
-		                    }
-		                }else{
-		                	
-		                    $ext=substr(strtolower($file),-3);
-		                    if($ext=='php'){
-		                        $filesource=file_get_contents($path.'/'.$file);
-
-		                        foreach($find as $key => $f){
-		                        	$pos = strpos($filesource, $f);
-			                        if ($pos === false) {
-			                            continue;
-			                        } else {
-			                        	$rest = substr($filesource, $pos, 100); 
-			                        	$rest = trimRest($rest);
-
-			                        	$key = $rest[1];
-			                        	if(empty($key)) $key = 'rebrand';
-
-			                        	$gettext[$key] = $rest[0];
-			                        	
-			                        }
-		                        }
-		                    }else{
-		                        continue;
-		                    }
-		                }
-		            }
-		        } //endwhile
-
-		        closedir($handle);
-		    }
-		    $return = $gettext;
-		    ob_end_clean();
-		    print_r( $return );
-		}
-	*/
-
-
 
 
 		if ($handle = opendir($path)) {
 	       while (false !== ($file = readdir($handle))) {
 	       	 	if ($file != "." && $file != "..") {
 			       if(is_dir($path.'/'.$file)){
-			       		
-			       		//if($files == 'options.php') continue;
-			       		
+			   
 			       		$handles = opendir($path.'/'.$file);
 			       		while (false !== ($files = readdir($handles))) {
 			       			$ext=substr(strtolower($files),-3);
 		                    if($ext=='php'){
-					       		if($files == 'options.php') continue;
-					       		//print_r( ' /'.$file . '/' . $files . '  ');
-
+					       		if($files == 'options.php' or $files == 'functions.php') continue;
 					       		$filesource = file_get_contents($path.'/'.$file . '/' . $files);
+								preg_match_all( "/((?:__\(|_e\().*\))/", $filesource, $out);
 
-		                        foreach($find as $key => $f){
-		                        	$pos = strpos($filesource, $f);
-		                        	
-			                        if (!$pos) {
-			                            continue;
-			                        } else {
-			                        	$rest = substr($filesource, $pos, 80); 
-
-
-										$rest = trimRest($rest);
-
-			                        	$key = $rest[1];
-			                        	if(empty($key)) $key = 'rebrand';
-
-			                        	$gettext[$key][] = $rest[0];
-			                        	//print_r( $gettext);
-			                        	
-			                        }
+	                        	foreach($out as $key => $val){
+		                        	if(!empty($val)){		
+	                        			foreach( $val as $key => $v ){
+											$rest = trimRest2($v);
+				                        	$key = $rest[1];
+				                        	if(empty($key)) $key = 'Rebrand';
+			                        		if(!in_array_r($rest[0], $gettext))  {
+			                        			$gettext[$key][] = $rest[0];
+			                        		}
+	                        			}
+		                        	}
 		                        }
+		                        
 					       	}
+
 				       	}
 	                }else{
 	                	$ext=substr(strtolower($file),-3);
 		                    if($ext=='php'){
-			       				//if($file == 'options.php') continue;
+			       				if($file == 'functions.php') continue;
 		                        $filesource=file_get_contents($path.'/'.$file);
+								preg_match_all( "/((?:__\(|_e\().*\))/", $filesource, $out);
 
-		                        foreach($find as $key => $f){
-		                        	$pos = strpos($filesource, $f);
-			                        if ($pos === false) {
-			                            continue;
-			                        } else {
-			                        	$rest = substr($filesource, $pos, 100); 
-			                        	$rest = trimRest($rest);
-
-			                        	$key = $rest[1];
-			                        	if(empty($key)) $key = 'rebrand';
-
-			                        	$gettext[$key][] = $rest[0];
-			                        	
-			                        }
+	                        	foreach($out as $key => $val){
+		                        	if(!empty($val)){		
+	                        			foreach( $val as $key => $v ){
+											$rest = trimRest2($v);
+				                        	$key = $rest[1];
+				                        	if(empty($key)) $key = 'Rebrand';
+			                        		if(!in_array_r($rest[0], $gettext))  {
+			                        			$gettext[$key][] = $rest[0];
+			                        		}
+	                        			}
+		                        	}
 		                        }
+
 		                    }else{
 		                        continue;
 		                    }
-	                    //print_r( $file );
 	                }
-			       //findString( $path.'/'.$file, $find );
 			   	}
 		   }
 		}
-
-		//findString($path,$find);
 
 		//print_r( $gettext );
 
@@ -232,6 +189,19 @@ function theme_options_do_page() {
 		<?php if ( false !== $_REQUEST['settings-updated'] ) : ?>
 		<div class="updated fade"><p><strong><?php _e( 'Options saved', 'pptheme' ); ?></strong></p></div>
 		<?php endif; ?>
+
+
+		<?php if ( false !== $_REQUEST['gettext'] ) : ?>
+		<div class="updated fade"><p><strong><?php _e( 'Theme texts grabbed', 'pptheme' ); ?></strong></p></div>
+		<?php endif; ?>
+
+		<form method="post" action="">
+			<input type="hidden" name="gettext" value="update">
+
+			<p class="submit">
+				<input type="submit" class="button-primary" value="<?php _e( 'Grab/Update theme texts', 'pptheme' ); ?>" />
+			</p>
+		</form>
 
 		<form method="post" action="options.php">
 			<?php settings_fields( 're_options' ); ?>
@@ -327,7 +297,7 @@ function theme_options_do_page() {
 	<div class="row clearfix">
 		<label>Search</label>
 		<?php
-			$option_name = 'search' . '_'; 
+			$option_name = 'searchform' . '_'; 
 			$value = esc_attr( $options[ $option_name . $lang ] );
 			if(empty($value)) $value = 'Kirjuta siia tootenimi'; // default
 		?>

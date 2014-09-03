@@ -12,7 +12,10 @@
 		add_image_size( 'thumb', 200, 200, $crop );
 		add_image_size( 'preview', 765, 505, $crop );
 
-		register_nav_menus( array( 'top-menu' => __( 'Top Menu', 'desadent' ) ) );
+		add_image_size( 'slider', 1920, 345, true );
+		add_image_size( 'slider_cropped', 1006, 345, true );
+
+		register_nav_menus( array( 'top-menu' => __( 'Top Menu', 'desadent')  ) );
 	}
 
 
@@ -47,16 +50,20 @@
 
 	//Posttypes
 	include_once($functions_path . 'post_types.php');
+
+	//Meta boxes
+	include_once($functions_path . 'meta_box.php');
+	
 	
 	//Shortcodes
-	require_once $functions_path . 'theme_shortcodes/shortcodes.php';
-	include_once($functions_path . 'theme_shortcodes/alert.php');
+	//require_once $functions_path . 'theme_shortcodes/shortcodes.php';
+	//include_once($functions_path . 'theme_shortcodes/alert.php');
 	include_once($functions_path . 'theme_shortcodes/tabs.php');
 	include_once($functions_path . 'theme_shortcodes/toggle.php');
-	include_once($functions_path . 'theme_shortcodes/html.php');
+	//include_once($functions_path . 'theme_shortcodes/html.php');
 
 	//tinyMCE includes
-	include_once($functions_path . 'theme_shortcodes/tinymce/tinymce_shortcodes.php');
+	include_once($functions_path . 'theme_shortcodes/tinymce_shortcodes.php');
 	
 	
 	function make_blog_name_from_name($name = '') {
@@ -79,6 +86,7 @@
 	if ( !function_exists( 'mighty_enqueue_head_scripts' ) ) {
 		function mighty_enqueue_head_scripts() {
 			wp_enqueue_style( 'fancybox', get_bloginfo('template_url')."/css/jquery.fancybox.css", FALSE, '1.0' ); 
+			wp_enqueue_style( 'slick', get_bloginfo('template_url')."/css/slick.css", FALSE, '1.0' ); 
 		
 		}
 	}
@@ -92,7 +100,7 @@
 			
 				
 			wp_enqueue_script('easing', get_template_directory_uri() . '/js/easing.js', 'jquery', false);
-			wp_enqueue_script('theme-slides', get_bloginfo('template_url').'/js/slides.js', 'slides');
+			wp_enqueue_script('theme-slides', get_bloginfo('template_url').'/js/slick.min.js', 'slides');
 			
 			//if( current_user_can('manage_options') ) wp_enqueue_script('theme-slides', get_bloginfo('template_url').'/js/admin_func.js', 'slides');
 		}
@@ -365,10 +373,93 @@
 
 	add_filter( 'gettext', 'theme_gettext_fields', 20, 3 );
 	function theme_gettext_fields( $translated_text, $text, $domain ) {
+		//if(is_admin()) return $translated_text;
 
 		$newtext = __t( sanitize_title($text) );
 		if( !empty($newtext) and $newtext != $text ) $translated_text = $newtext;
 
    	 	return $translated_text;
 	}
+
+	if (function_exists('qtrans_getLanguage')) {
+		add_action( 'admin_init', 'fix_nav_menu' );
+		function fix_nav_menu() {
+			global $pagenow;
+			
+			if( $pagenow != 'nav-menus.php' ) return;
+			wp_enqueue_script( 'nav-menu-query',  get_template_directory_uri() . '/functions/qts_nav_fix.js' , 'nav-menu', '1.0' );
+			add_meta_box( 'qt-languages', __('Languages'), 'nav_menu_meta_box', 'nav-menus', 'side', 'default' );
+		}
+		/**
+		 * draws meta box for select language
+		 * 
+		 * @since 1.0
+		 */
+		function nav_menu_meta_box() {
+			global $q_config;
+			echo '<p>';
+			foreach($q_config['enabled_languages'] as $id => $language) {
+				$checked = ($language == $q_config['language']) ? ' checked="checked"' : '';
+				echo '<p style="margin:0 0 5px 0"><input type="radio" style="margin-right:5px" name="wa_qt_lang" value="' . $language . '" id="wa_gt_lang_' . $id . '" ' . $checked . '/>';
+				echo '<label for="wa_gt_lang_' . $id . '">';
+				echo '<img src="' . trailingslashit(WP_CONTENT_URL).$q_config['flag_location'].$q_config['flag'][$language] . '"/>&nbsp;';
+				echo __($q_config['language_name'][$language], 'qtranslate');
+				echo '</label></p>';
+			}
+			echo '</p>';
+		}
+	}
+
+
+
+	// Ajax search posts
+	add_action('wp_ajax_searh_get_posts', 'searh_get_posts');
+	function searh_get_posts() {
+		if ( !empty($_POST['value']) ) {
+
+			$value = strip_tags($_POST['value']);
+
+			add_filter( 'posts_search', 'ni_search_by_title_only', 500, 2 );
+			$query = new WP_Query( 's='.$value );
+			remove_filter( 'posts_search', 'ni_search_by_title_only');
+
+			if ( $query->have_posts() ) {
+				//echo '<ul>';
+				while ( $query->have_posts() ) {
+					$query->the_post();
+					echo '<li><a href="'.get_permalink($query->post->ID).'">' . get_the_title($query->post->ID) . '</a></li>';
+				}
+				//echo '</ul>';
+			} else {
+				echo 'noposts';
+			}
+			wp_reset_postdata();
+			
+			die();
+		} else {
+			die();
+		}
+	}
+
+	function ni_search_by_title_only( $search, &$wp_query ){
+	    global $wpdb;
+	    if ( empty( $search ) )
+	        return $search; // skip processing - no search term in query
+	    $q = $wp_query->query_vars;
+	    $n = ! empty( $q['exact'] ) ? '' : '%';
+	    $search =
+	    $searchand = '';
+	    foreach ( (array) $q['search_terms'] as $term ) {
+	        $term = esc_sql( like_escape( $term ) );
+	        $search .= "{$searchand}($wpdb->posts.post_title LIKE '{$n}{$term}{$n}')";
+	        $searchand = ' AND ';
+	    }
+	    if ( ! empty( $search ) ) {
+	        $search = " AND ({$search}) ";
+	        if ( ! is_user_logged_in() )
+	            $search .= " AND ($wpdb->posts.post_password = '') ";
+	    }
+	    return $search;
+	}
+	
 ?>

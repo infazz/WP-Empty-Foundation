@@ -1,6 +1,16 @@
-		<footer id="footer" class="source-org vcard copyright">
-			<small>&copy;<?php echo date("Y"); echo " "; bloginfo('name'); ?></small>
-		</footer>
+<footer id="footer">
+		<section class="row">
+        <div class="column medium-4">
+          <div class="address"><span><?php _t('adress'); ?></span></div>
+        </div>
+        <div class="column medium-4">
+          <div class="contact"><span><?php _t('phone'); ?><br><a href="mailto:<?php _t('email'); ?>"><?php _t('email'); ?></a></span></div>
+        </div>
+        <div class="column medium-4">
+          <div class="facebook"><span><a href="https://facebook.com<?php _t('fb'); ?>" target="_blank"><?php _t('fb'); ?></a></span></div>
+        </div>
+    </section>
+</footer>
 
 
 <?php wp_footer(); ?>
