@@ -2,7 +2,12 @@
 	$functions_path = TEMPLATEPATH . '/functions/';	
 	require_once ( TEMPLATEPATH . '/options/options.php' );
 
-	$lang_arr = qtrans_getSortedLanguages();	
+	if(function_exists('qtrans_getSortedLanguages')){
+		$lang_arr = qtrans_getSortedLanguages();	
+	}else{
+		$lang_arr = array('ru' => 'ru');	
+	}
+	
 
 	add_action( 'after_setup_theme', 're_setup_template' );
 	function re_setup_template(){
