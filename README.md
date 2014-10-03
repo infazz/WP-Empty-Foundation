@@ -4,6 +4,7 @@
 ## Includes
 	
 	* Fancybox
+	* Some Editor schortcodes
 
 
 ## Requirements
