@@ -23,4 +23,5 @@ function toggle_shortcode($atts, $content = null) {
 }
 
 add_shortcode('toggle', 'toggle_shortcode');
+
 ?>

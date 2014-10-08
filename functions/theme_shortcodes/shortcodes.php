@@ -1,5 +1,31 @@
 <?php
 
+/**
+ * Ball
+ *
+ */
+
+function dotted_ball_shortcode($atts, $content = null) {
+
+    extract(shortcode_atts(
+        array(
+            'align' => 'center'
+    ), $atts));
+
+    $output = '<div class="dotted_ball '.$align.'">';
+    $output .= '<div class="dotted_ball_wrap">';
+    $output .= do_shortcode($content);
+    $output .= '</div>';
+    $output .= '</div><!-- .dotted_ball (end) -->';
+
+    return $output;
+
+}
+
+add_shortcode('dotted_ball', 'dotted_ball_shortcode');
+
+
+
 function remove_invalid_tags($str, $tags) 
 {
     foreach($tags as $tag)

@@ -1,26 +1,133 @@
 <?php
+	add_action('init', 'myStartSession', 1);
+	function myStartSession() {
+		if(!session_id()) {
+			session_start();
+		}   
+ 		//unset($_SESSION['mjasnickaja_cart']);
+ 		//unset($_SESSION['mjasnickaja_favs']);
+		if(!isset($_SESSION['mjasnickaja_cart'])){
+			$array = array();
+			$_SESSION['mjasnickaja_cart'] = $array;
+		}
+		if(!isset($_SESSION['mjasnickaja_favs'])){
+			$array = array();
+			$_SESSION['mjasnickaja_favs'] = $array;
+		}
+		//
+	}
+
 	$functions_path = TEMPLATEPATH . '/functions/';	
 	require_once ( TEMPLATEPATH . '/options/options.php' );
 
 	if(function_exists('qtrans_getSortedLanguages')){
 		$lang_arr = qtrans_getSortedLanguages();	
 	}else{
-		$lang_arr = array('ru' => 'ru');	
+		$lang_arr = array('ru');	
 	}
+
+	
+	//Category meta
+	include_once($functions_path . 'category_meta.php');
 	
 
 	add_action( 'after_setup_theme', 're_setup_template' );
 	function re_setup_template(){
 		add_theme_support( 'post-thumbnails' );
 		
-		add_image_size( 'tiny', 80, 50, $crop );
-		add_image_size( 'thumb', 200, 200, $crop );
-		add_image_size( 'preview', 765, 505, $crop );
+		add_image_size( 'tiny', 78, 81, true );
+		add_image_size( 'thumb', 456, 424, true );
+		add_image_size( 'preview', 460, 470, true );
+		add_image_size( 'previewx2', 920, 940, true );
 
-		add_image_size( 'slider', 1920, 345, true );
-		add_image_size( 'slider_cropped', 1006, 345, true );
+		add_image_size( 'slider', 984, 603, true );
 
-		register_nav_menus( array( 'top-menu' => __( 'Top Menu', 'desadent')  ) );
+		register_nav_menus( array( 'side-menu' => __( 'Боковое меню', 'desadent')  ) );
+		register_nav_menus( array( 'top-menu' => __( 'Верхнее меню', 'desadent')  ) );
+	}
+
+
+	// Ajax cart update
+	add_action('wp_ajax_re_update_cart', 're_update_cart');
+	add_action('wp_ajax_nopriv_re_update_cart', 're_update_cart' );
+	function re_update_cart() {
+		if ( !empty($_POST['id']) or !empty($_POST['quantity']) ) {
+
+			$cart = $_SESSION['mjasnickaja_cart'];
+
+			$id = strip_tags($_POST['id']);
+			$quantity = strip_tags($_POST['quantity']);
+
+			$cart[$id] = array('id'=>$id, 'quantity'=>$quantity);
+			
+			$_SESSION['mjasnickaja_cart'] = $cart;
+
+			echo 'ok';
+
+			die();
+		} else {
+			die();
+		}
+	}
+
+
+	// Ajax favorite update
+	add_action('wp_ajax_re_update_favs', 're_update_favs');
+	add_action('wp_ajax_nopriv_re_update_favs', 're_update_favs' );
+	function re_update_favs() {
+		if ( !empty($_POST['id']) ) {
+			$favs = $_SESSION['mjasnickaja_favs'];
+			$id = strip_tags($_POST['id']);
+
+			if(in_array($id, $favs)){
+				$n_favs = array();
+				foreach ($favs as $key => $value) {
+					if($id == $value) continue;
+					$n_favs[] = $value;
+				}
+				$favs = $n_favs;
+			}else{
+				$favs[] = $id;
+			}
+
+			$_SESSION['mjasnickaja_favs'] = $favs;
+			echo 'ok';
+			die();
+		} else {
+			die();
+		}
+	}
+
+
+	add_action('wp_ajax_re_cart_items_num', 're_cart_items_num');
+	add_action('wp_ajax_nopriv_re_cart_items_num', 're_cart_items_num' );
+	function re_cart_items_num(){
+		$cart = $_SESSION['mjasnickaja_cart'];
+
+		$num = count($cart);
+		/*foreach ($cart as $key => $value) {
+			$num = $num + $value['quantity'];
+		}*/
+		//print_r($cart);
+		echo $num;
+
+		if (defined('DOING_AJAX') && DOING_AJAX) die();
+	}
+
+
+	add_action('wp_ajax_re_favs_items_num', 're_favs_items_num');
+	add_action('wp_ajax_nopriv_re_favs_items_num', 're_favs_items_num' );
+	function re_favs_items_num(){
+		$favs = $_SESSION['mjasnickaja_favs'];
+
+		$num = count($favs);
+		/*foreach ($cart as $key => $value) {
+			$num = $num + $value['quantity'];
+		}*/
+		//print_r($cart);
+		echo $num;
+
+		if (defined('DOING_AJAX') && DOING_AJAX) die();
 	}
 
 
@@ -61,7 +168,7 @@
 	
 	
 	//Shortcodes
-	//require_once $functions_path . 'theme_shortcodes/shortcodes.php';
+	require_once $functions_path . 'theme_shortcodes/shortcodes.php';
 	//include_once($functions_path . 'theme_shortcodes/alert.php');
 	include_once($functions_path . 'theme_shortcodes/tabs.php');
 	include_once($functions_path . 'theme_shortcodes/toggle.php');
@@ -91,8 +198,7 @@
 	if ( !function_exists( 'mighty_enqueue_head_scripts' ) ) {
 		function mighty_enqueue_head_scripts() {
 			wp_enqueue_style( 'fancybox', get_bloginfo('template_url')."/css/jquery.fancybox.css", FALSE, '1.0' ); 
-			wp_enqueue_style( 'slick', get_bloginfo('template_url')."/css/slick.css", FALSE, '1.0' ); 
-		
+			wp_enqueue_style( 'slick', get_bloginfo('template_url')."/css/idangerous.swiper.css", FALSE, '1.0' ); 
 		}
 	}
 	
@@ -105,7 +211,8 @@
 			
 				
 			wp_enqueue_script('easing', get_template_directory_uri() . '/js/easing.js', 'jquery', false);
-			wp_enqueue_script('theme-slides', get_bloginfo('template_url').'/js/slick.min.js', 'slides');
+			wp_enqueue_script('theme-slides', get_bloginfo('template_url').'/js/idangerous.swiper.js', 'jquery');
+			
 			
 			//if( current_user_can('manage_options') ) wp_enqueue_script('theme-slides', get_bloginfo('template_url').'/js/admin_func.js', 'slides');
 		}
@@ -321,7 +428,7 @@
 			echo "</div>";
 		}
 	 }
-	add_filter('get_pagenum_link', 'qtranslate_next_previous_fix');
+	//add_filter('get_pagenum_link', 'qtranslate_next_previous_fix');
 
 	function qtranslate_next_previous_fix($url) {
 		$aUrl = explode("/".qtrans_getLanguage(),$url);
@@ -357,7 +464,7 @@
 		if( function_exists('qtrans_getLanguage')){
 			$lang = qtrans_getLanguage();
 		}else{
-			$lang = '';
+			$lang = 'ru';
 		}
 		//use  
 		echo $txt[$val.'_'.$lang];
@@ -368,7 +475,7 @@
 		if( function_exists('qtrans_getLanguage')){
 			$lang = qtrans_getLanguage();
 		}else{
-			$lang = '';
+			$lang = 'ru';
 		}
 		//use  
 		return $txt[$val.'_'.$lang];

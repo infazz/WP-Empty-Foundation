@@ -21,9 +21,9 @@
 							}
 						},
 						{
-							text: 'Bussines card',
+							text: 'Dotted ball',
 							onclick: function() {
-								editor.insertContent('[card] Your company info here [/card]');
+								editor.insertContent('[dotted_ball align="center"]Your info here[/dotted_ball]');
 							}
 						},
 						{
