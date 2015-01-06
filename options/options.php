@@ -50,11 +50,33 @@ $radio_options = array(
 	)
 );
 
+$fileList = array();
+
+function globThis($path){
+	global $fileList;
+
+	$files = glob($path.'/*');
+	foreach($files as $file){
+
+		if(is_dir($file)){
+			if( strpos($file,'bower_components') !== false or 
+				strpos($file,'.sass-cache') !== false or 
+				strpos($file,'.git') !== false or
+				strpos($file,'cache') !== false or
+				strpos($file,'functions') !== false ) continue;
+			globThis($file);
+		}else{
+			if( strpos($file,'meta_') !== false or strpos($file,'_meta') !== false or strpos($file,'options.php') !== false ) continue;
+			$fileList[] = $file;
+		}
+	      
+	}
+}
 /**
  * Create the options page
  */
 function theme_options_do_page() {
-	global $select_options, $radio_options;
+	global $select_options, $radio_options, $fileList;
 
 	if ( ! isset( $_REQUEST['settings-updated'] ) )
 		$_REQUEST['settings-updated'] = false;
@@ -63,10 +85,10 @@ function theme_options_do_page() {
 
 
 	function trimRest($rest){
-		$rest = explode("' )", $rest);
-    	$rest = explode("')", $rest[0]);
-    	$rest = explode('")', $rest[0]);
-    	$rest = str_replace("_e( '","",$rest[0]);
+		//$rest = explode("' )", $rest);
+    	//$rest = explode("')", $rest[0]);
+    	//$rest = explode('")', $rest[0]);
+    	$rest = str_replace("_e( '","",$rest);
     	$rest = str_replace("_e('","",$rest);
     	$rest = str_replace('_e("',"",$rest);
     	$rest = str_replace('_e( "',"",$rest);
@@ -74,15 +96,22 @@ function theme_options_do_page() {
     	$rest = str_replace('__("',"",$rest);
     	$rest = str_replace("__( '", "",$rest);
     	$rest = str_replace("__('", "",$rest);
+    	$rest = str_replace("')","",$rest);
+    	$rest = str_replace("' )","",$rest);
+    	$rest = str_replace("')","",$rest);
+    	$rest = str_replace('" )',"",$rest);
+    	$rest = str_replace('")',"",$rest);
     	$rest = str_replace("', '", "','",$rest);
     	$rest = str_replace('", "', "','",$rest);
     	$rest = str_replace('","', "','",$rest);
     	$rest = explode("','", $rest);
+    	//$rest = explode('","', $rest);
     	return $rest;
 	}
 	
 
 	function trimRest2($rest){
+		//print_r($rest . '<br>');
     	$rest = str_replace("_e('","",$rest);
     	$rest = str_replace("_e( '","",$rest);
     	$rest = str_replace("__('","",$rest);
@@ -104,76 +133,53 @@ function theme_options_do_page() {
 	    return false;
 	}
 
+	//update_option( 're_opt_gettext', '' );
+
 	if(isset($_POST['gettext']) and $_POST['gettext'] == 'update'){
 		$path    = TEMPLATEPATH;
-		
+
+		globThis($path);
+		$fileList = array_unique($fileList);
+
 		$gettext = array();
-		$find = array( "_e(", "__(" );
+		$processed = array();
 
+		foreach ($fileList as $key => $filepath) {
+			if(in_array($filepath, $processed)) continue;
+			$processed[] = $filepath;
 
-		if ($handle = opendir($path)) {
-	       while (false !== ($file = readdir($handle))) {
-	       	 	if ($file != "." && $file != "..") {
-			       if(is_dir($path.'/'.$file)){
-			   
-			       		$handles = opendir($path.'/'.$file);
-			       		while (false !== ($files = readdir($handles))) {
-			       			$ext=substr(strtolower($files),-3);
-		                    if($ext=='php'){
-					       		if($files == 'options.php' or $files == 'functions.php') continue;
-					       		$filesource = file_get_contents($path.'/'.$file . '/' . $files);
-								preg_match_all( "/((?:__\(|_e\().*\))/", $filesource, $out);
+			$filesource = file_get_contents($filepath);
+			preg_match_all( "/((?:__|_e)\((?:.*?)\))/", $filesource, $out);
 
-	                        	foreach($out as $key => $val){
-		                        	if(!empty($val)){		
-	                        			foreach( $val as $key => $v ){
-											$rest = trimRest2($v);
-				                        	$key = $rest[1];
-				                        	if(empty($key)) $key = 'Rebrand';
-			                        		if(!in_array_r($rest[0], $gettext))  {
-			                        			$gettext[$key][] = $rest[0];
-			                        		}
-	                        			}
-		                        	}
-		                        }
-		                        
-					       	}
+			//print_r($out);
+        	foreach($out as $key => $val){
+            	if(!empty($val)){		
+        			foreach( $val as $key => $v ){
+						$rest = trimRest($v);
 
-				       	}
-	                }else{
-	                	$ext=substr(strtolower($file),-3);
-		                    if($ext=='php'){
-			       				if($file == 'functions.php') continue;
-		                        $filesource=file_get_contents($path.'/'.$file);
-								preg_match_all( "/((?:__\(|_e\().*\))/", $filesource, $out);
+						//print_r($rest);
 
-	                        	foreach($out as $key => $val){
-		                        	if(!empty($val)){		
-	                        			foreach( $val as $key => $v ){
-											$rest = trimRest2($v);
-				                        	$key = $rest[1];
-				                        	if(empty($key)) $key = 'Rebrand';
-			                        		if(!in_array_r($rest[0], $gettext))  {
-			                        			$gettext[$key][] = $rest[0];
-			                        		}
-	                        			}
-		                        	}
-		                        }
+        				if(strpos($rest[0], 'outerHTML') !== false or
+            				strpos($rest[0], 'esc_html') !== false or
+            				strpos($rest[0], 'get_option') !== false or
+            				strpos($rest[0], 'WC()') !== false) continue;
 
-		                    }else{
-		                        continue;
-		                    }
-	                }
-			   	}
-		   }
+                    	$key = $rest[1];
+                    	if(empty($key)) $key = 'Mamma';
+                		if(!in_array_r($rest[0], $gettext) )  {
+                			$gettext[$key][] = htmlspecialchars($rest[0]);
+                		}
+        			}
+            	}
+            }
 		}
-
-		//print_r( $gettext );
 
 
 		$gettext_opt = get_option( 're_opt_gettext' );
 		//$gettext_opt
-		if($gettext_opt != $gettext) update_option( 're_opt_gettext', $gettext );
+		if($gettext_opt != $gettext) {
+			update_option( 're_opt_gettext', $gettext );
+		}
 	}
 
 	//update_option( 're_opt_gettext', '' );
@@ -191,7 +197,7 @@ function theme_options_do_page() {
 		<?php endif; ?>
 
 
-		<?php if ( false !== $_REQUEST['gettext'] ) : ?>
+		<?php if ( isset($_POST['gettext']) ) : ?>
 		<div class="updated fade"><p><strong><?php _e( 'Theme texts grabbed', 'pptheme' ); ?></strong></p></div>
 		<?php endif; ?>
 
@@ -214,7 +220,11 @@ function theme_options_do_page() {
 			<div class="tabs">
 				<div class="tab-menu">
 					<ul><?php 
-							$langarr = qtrans_getSortedLanguages();	
+							if( function_exists('qtrans_getSortedLanguages')){
+								$langarr = qtrans_getSortedLanguages();	
+							}else{
+								$langarr = array('ru');
+							}
 							$i = 1;
 							foreach($langarr as $lang){
 								echo '<li><a href="#tab'. $i . '">' . $lang . '</a></li>';
@@ -231,101 +241,83 @@ function theme_options_do_page() {
 
 
 
-
-<h2>Header</h2>
-
-	<div class="row clearfix">
-		<label>Aadress</label>
-		<?php
-			$option_name = 'adress' . '_'; 
-			$value = esc_attr( $options[ $option_name . $lang ] );
-			if(empty($value)) $value = 'Paavli 6b, Tallinn 10412'; // default
-		?>
-		<input id="re_opt[<?php echo $option_name . $lang ?>]" name="re_opt[<?php echo $option_name . $lang ?>]" value="<?php echo $value; ?>" class="regular-text" type="text"  />
-	</div>	
+<h2>Content</h2>
 
 	<div class="row clearfix">
-		<label>Phone number</label>
+		<label>Все новости</label>
 		<?php
-			$option_name = 'phone' . '_'; 
+			$option_name = 'newspage' . '_'; 
 			$value = esc_attr( $options[ $option_name . $lang ] );
-			if(empty($value)) $value = '(+372) 6424 096'; // default
+			if(empty($value)) $value = ''; // default
 		?>
-		<input id="re_opt[<?php echo $option_name . $lang ?>]" name="re_opt[<?php echo $option_name . $lang ?>]" value="<?php echo $value; ?>" class="regular-text" type="text"  />	
-	</div>	
-
-	<div class="row clearfix">
-		<label>Email</label>
-		<?php
-			$option_name = 'email' . '_'; 
-			$value = esc_attr( $options[ $option_name . $lang ] );
-			if(empty($value)) $value = 'info@stereomeedia.ee'; // default
-		?>
-		<input id="re_opt[<?php echo $option_name . $lang ?>]" name="re_opt[<?php echo $option_name . $lang ?>]" value="<?php echo $value; ?>" class="regular-text" type="text"  />	
-	</div>	
-
-	<div class="row clearfix">
-		<label>Facebook</label>
-		<?php
-			$option_name = 'fb' . '_'; 
-			$value = esc_attr( $options[ $option_name . $lang ] );
-			if(empty($value)) $value = '/stereomeedia'; // default
-		?>
-		<input id="re_opt[<?php echo $option_name . $lang ?>]" name="re_opt[<?php echo $option_name . $lang ?>]" value="<?php echo $value; ?>" class="regular-text" type="text"  />	
+		<select name="re_opt[<?php echo $option_name . $lang ?>]"> 
+			<option value=""><?php echo esc_attr( __( '-- Select page --' ) ); ?></option> 
+			<?php 
+				
+				 $pages = get_pages(); 
+				 foreach ( $pages as $page ) {
+					$sel = '';
+					if($value == $page->ID)  $sel = 'selected';
+					   $option = '<option value="' . $page->ID . '" '. $sel .'>';
+					   $option .= $page->post_title;
+					   $option .= '</option>';
+					   echo $option;
+				 }
+				
+			?>
+		</select>
 	</div>
 
 	<div class="row clearfix">
-		<label>Cart</label>
+		<label>Все клиенты</label>
 		<?php
-			$option_name = 'cart' . '_'; 
+			$option_name = 'clientspage' . '_'; 
 			$value = esc_attr( $options[ $option_name . $lang ] );
-			if(empty($value)) $value = 'Päringukorv'; // default
+			if(empty($value)) $value = ''; // default
 		?>
-		<input id="re_opt[<?php echo $option_name . $lang ?>]" name="re_opt[<?php echo $option_name . $lang ?>]" value="<?php echo $value; ?>" class="regular-text" type="text"  />	
-	</div>	
+		<select name="re_opt[<?php echo $option_name . $lang ?>]"> 
+			<option value=""><?php echo esc_attr( __( '-- Select page --' ) ); ?></option> 
+			<?php 
+				
+				 $pages = get_pages(); 
+				 foreach ( $pages as $page ) {
+					$sel = '';
+					if($value == $page->ID)  $sel = 'selected';
+					   $option = '<option value="' . $page->ID . '" '. $sel .'>';
+					   $option .= $page->post_title;
+					   $option .= '</option>';
+					   echo $option;
+				 }
+				
+			?>
+		</select>
+	</div>
+
+
 
 	<div class="row clearfix">
-		<label>Go to cart</label>
+		<label>Имейл для заявок</label>
 		<?php
-			$option_name = 'gotocart' . '_'; 
-			$value = esc_attr( $options[ $option_name . $lang ] );
-			if(empty($value)) $value = 'Vormista päring'; // default
+			$option_name = 'email' . '_'; 
+			$value = $options[ $option_name . $lang ];
+			if(empty($value)) $value = ''; // default
 		?>
-		<input id="re_opt[<?php echo $option_name . $lang ?>]" name="re_opt[<?php echo $option_name . $lang ?>]" value="<?php echo $value; ?>" class="regular-text" type="text"  />	
-	</div>		
-
-	<div class="row clearfix">
-		<label>Search</label>
-		<?php
-			$option_name = 'searchform' . '_'; 
-			$value = esc_attr( $options[ $option_name . $lang ] );
-			if(empty($value)) $value = 'Kirjuta siia tootenimi'; // default
-		?>
-		<input id="re_opt[<?php echo $option_name . $lang ?>]" name="re_opt[<?php echo $option_name . $lang ?>]" value="<?php echo $value; ?>" class="regular-text" type="text"  />	
-	</div>	
+		<input id="re_opt[<?php echo $option_name . $lang ?>]" name="re_opt[<?php echo $option_name . $lang ?>]" value="<?php echo esc_attr($value); ?>" class="regular-text" type="text"  />	
+	</div>
 
 
 
-<h2>Content</h2>
-	<div class="row clearfix">
-		<label>Read more</label>
-		<?php
-			$option_name = 'readmore' . '_'; 
-			$value = esc_attr( $options[ $option_name . $lang ] );
-			if(empty($value)) $value = 'vaata rohkem'; // default
-		?>
-		<input id="re_opt[<?php echo $option_name . $lang ?>]" name="re_opt[<?php echo $option_name . $lang ?>]" value="<?php echo $value; ?>" class="regular-text" type="text"  />	
-	</div>	
+<h2>footer</h2>
 
 
 	<div class="row clearfix">
 		<label></label>
 		<?php
-			$option_name = 'txt' . '_'; 
+			$option_name = 'footer' . '_'; 
 			$value = $options[ $option_name . $lang ];
 			if(empty($value)) $value = ''; // default
 		?>
-		<?php //wp_editor( $value, $option_name . $lang , $settings = array('teeny' => true, 'textarea_name' => 're_opt[' .  $option_name . $lang  . ']') ); ?>							
+		<?php wp_editor( $value, $option_name . $lang , $settings = array('teeny' => false, 'textarea_name' => 're_opt[' .  $option_name . $lang  . ']') ); ?>							
 	</div>
 
 
@@ -336,20 +328,30 @@ function theme_options_do_page() {
 
 <?php 
 	foreach( $gettext_opt as $key => $txt){
-		
-		echo '<h2>'.$key.'</h2>';
+
+		echo  '<div class="toggle">';
+	    	echo  '<a href="#" class="trigger">'.$key.'</a>';
+		   
+			echo  '<div class="box">';
+		//echo '<h2>'.$key.'</h2>';
 
 		foreach( $txt as $key => $val){
-			echo '<div class="row clearfix">';
-			echo '<label>'.$val.'</label>';
-			$option_name = sanitize_title($val) . '_'; 
-			$value = esc_attr( $options[ $option_name . $lang ] );
-			if(empty($value)) $value = $val; // default
+				echo '<div class="row clearfix">';
+				echo '<label>'.$val.'</label>';
+				$option_name = sanitize_title($val) . '_'; 
+				$value = esc_attr( $options[ $option_name . $lang ] );
+
+				//print_r($value);
+				if(empty($value)) $value = $val; // default
 	?>
-			<input id="re_opt[<?php echo $option_name . $lang ?>]" name="re_opt[<?php echo $option_name . $lang ?>]" value="<?php echo $value; ?>" class="regular-text" type="text"  />
+					<input id="re_opt[<?php echo $option_name . $lang ?>]" name="re_opt[<?php echo $option_name . $lang ?>]" value="<?php echo $value; ?>" class="regular-text" type="text"  />
 	<?php
-			echo '</div>';
+				echo '</div>';
+
 		}
+			echo '<input type="submit" class="button-primary" value="'. __( 'Save Options', 'pptheme' ).'" />';
+		    echo  '</div>';
+	    echo '</div>';
 		
 	}
 ?>

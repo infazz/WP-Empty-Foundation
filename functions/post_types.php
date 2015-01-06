@@ -1,43 +1,16 @@
 <?php
-	//change the menu items label
-	function change_post_menu_label() {
-		global $menu;
-		global $submenu;
-		$menu[5][0] = 'Tooted';
-		$submenu['edit.php'][5][0] = 'Tooted';
-		$submenu['edit.php'][10][0] = 'Lisa toote';
-		echo '';
-	}
 	
-	function change_post_object_label() {
-        global $wp_post_types;
-        $labels = &$wp_post_types['post']->labels;
-        $labels->name = 'Tooted';
-        $labels->singular_name = 'Tooted';
-        $labels->add_new = 'Lisa toode';
-        $labels->add_new_item = 'Lisa toode';
-        $labels->edit_item = 'Uuenda toode';
-        $labels->new_item = 'toode';
-        $labels->view_item = 'Vaata toode';
-        $labels->search_items = 'Otsi';
-        $labels->not_found = 'Ei teitud';
-        $labels->not_found_in_trash = 'Ei teitud';
-    }
-    add_action( 'init', 'change_post_object_label' );
-    add_action( 'admin_menu', 'change_post_menu_label' );
-
-
 
 	function my_post_type_requests() {
 		$labels = array(
-			'name'               => 'Taotlused',
-			'singular_name'      => 'Taotlused',
-			'add_new'            => 'Lisa taotlus',
-			'add_new_item'       => 'Lisa',
-			'new_item'           => 'Uus',
-			'edit_item'          => 'Uuenda',
-			'view_item'          => 'Vaata',
-			'all_items'          => 'Kõik taotlused',
+			'name'               => 'Заявки',
+			'singular_name'      => 'Заявки',
+			'add_new'            => 'Новая',
+			'add_new_item'       => 'Добавить',
+			'new_item'           => 'Новая',
+			'edit_item'          => 'Обновить',
+			'view_item'          => 'Просмотреть',
+			'all_items'          => 'Все заявки',
 		);
 		register_post_type( 'requests',
 		array( 
@@ -65,11 +38,47 @@
 
 	add_action('init', 'my_post_type_requests');
 
+
+
+
+
+	function my_post_type_team() {
+		register_post_type( 'team',
+			array( 
+			'label' => 'Команда', 
+			'singular_label' => 'Команда',
+			'_builtin' => false,
+			'exclude_from_search' => true, // Exclude from Search Results
+			'capability_type' => 'page',
+			'public' => true, 
+			'show_ui' => true,
+			'show_in_nav_menus' => false,
+			'rewrite' => array(
+			'slug' => 'team',
+			'with_front' => FALSE,
+			),
+			'query_var' => "team", // This goes to the WP_Query schema
+			//'menu_icon' => get_template_directory_uri() . '/images/slides.png',
+			'supports' => array(
+				'title',
+				'thumbnail'
+				)
+			) 
+		);
+		//register_taxonomy('posttype_category', 'portfolio', array('hierarchical' => true, 'label' => 'Posttype Categories', 'singular_name' => 'Category', "rewrite" => true, "query_var" => true));
+	}
+
+	add_action('init', 'my_post_type_team');
+
+
+
+
+
 	function my_post_type_slider() {
 		register_post_type( 'slider',
 		array( 
-		'label' => __('Slaidid'), 
-		'singular_label' => 'Slaidid',
+		'label' => 'Слайдер', 
+		'singular_label' => 'Слайдер',
 		'_builtin' => false,
 		'exclude_from_search' => true, // Exclude from Search Results
 		'capability_type' => 'page',
@@ -80,12 +89,12 @@
 		'slug' => 'slide-view',
 		'with_front' => FALSE,
 		),
-		'query_var' => "slide", // This goes to the WP_Query schema
+		'query_var' => "slider", // This goes to the WP_Query schema
 		//'menu_icon' => get_template_directory_uri() . '/images/slides.png',
 		'supports' => array(
 			'title',
 			'editor',
-			'thumbnail')
+			)
 			) 
 		);
 		//register_taxonomy('posttype_category', 'portfolio', array('hierarchical' => true, 'label' => 'Posttype Categories', 'singular_name' => 'Category', "rewrite" => true, "query_var" => true));
@@ -94,11 +103,11 @@
 	add_action('init', 'my_post_type_slider');
 
 
-	function my_post_type_clients() {
-		register_post_type( 'clients',
+	function my_post_type_business() {
+		register_post_type( 'business',
 		array( 
-		'label' => __('Kliendid'), 
-		'singular_label' => 'Kliendid',
+		'label' => 'Индустрии', 
+		'singular_label' => 'Индустрии',
 		'_builtin' => false,
 		'exclude_from_search' => false, // Exclude from Search Results
 		'capability_type' => 'page',
@@ -106,10 +115,41 @@
 		'show_ui' => true,
 		'show_in_nav_menus' => false,
 		'rewrite' => array(
-		'slug' => 'clients',
+		'slug' => 'business',
 		'with_front' => FALSE,
 		),
-		'query_var' => "clients", // This goes to the WP_Query schema
+		'query_var' => "business", // This goes to the WP_Query schema
+		//'menu_icon' => get_template_directory_uri() . '/images/slides.png',
+		'supports' => array(
+			'title',
+			//'editor',
+			'thumbnail')
+			) 
+		);
+		//register_taxonomy('posttype_category', 'portfolio', array('hierarchical' => true, 'label' => 'Posttype Categories', 'singular_name' => 'Category', "rewrite" => true, "query_var" => true));
+	}
+
+	add_action('init', 'my_post_type_business');
+
+
+
+
+	function my_post_type_client() {
+		register_post_type( 'client',
+		array( 
+		'label' => 'Клиенты', 
+		'singular_label' => 'Клиенты',
+		'_builtin' => false,
+		'exclude_from_search' => false, // Exclude from Search Results
+		'capability_type' => 'page',
+		'public' => true, 
+		'show_ui' => true,
+		'show_in_nav_menus' => false,
+		'rewrite' => array(
+		'slug' => 'client',
+		'with_front' => FALSE,
+		),
+		'query_var' => "client", // This goes to the WP_Query schema
 		//'menu_icon' => get_template_directory_uri() . '/images/slides.png',
 		'supports' => array(
 			'title',
@@ -120,6 +160,5 @@
 		//register_taxonomy('posttype_category', 'portfolio', array('hierarchical' => true, 'label' => 'Posttype Categories', 'singular_name' => 'Category', "rewrite" => true, "query_var" => true));
 	}
 
-	add_action('init', 'my_post_type_clients');
-
+	add_action('init', 'my_post_type_client');
 ?>

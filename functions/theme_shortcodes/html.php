@@ -89,20 +89,6 @@ function map_shortcode($atts, $content = null) {
 add_shortcode('map', 'map_shortcode');
 
 
-// Dropcaps
-
-function dropcap_shortcode($atts, $content = null) {
-
-    $output = '<span class="dropcap">';
-    $output .= do_shortcode($content);
-    $output .= '</span><!-- .dropcap (end) -->';
-
-    return $output;
-
-}
-
-add_shortcode('dropcap', 'dropcap_shortcode');
-
 
 // Year
 

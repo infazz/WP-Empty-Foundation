@@ -1,21 +1,4 @@
 <?php
-	add_action('init', 'myStartSession', 1);
-	function myStartSession() {
-		if(!session_id()) {
-			session_start();
-		}   
- 		//unset($_SESSION['mjasnickaja_cart']);
- 		//unset($_SESSION['mjasnickaja_favs']);
-		if(!isset($_SESSION['mjasnickaja_cart'])){
-			$array = array();
-			$_SESSION['mjasnickaja_cart'] = $array;
-		}
-		if(!isset($_SESSION['mjasnickaja_favs'])){
-			$array = array();
-			$_SESSION['mjasnickaja_favs'] = $array;
-		}
-		//
-	}
 
 	$functions_path = TEMPLATEPATH . '/functions/';	
 	require_once ( TEMPLATEPATH . '/options/options.php' );
@@ -28,7 +11,13 @@
 
 	
 	//Category meta
-	include_once($functions_path . 'category_meta.php');
+	//include_once($functions_path . 'category_meta.php');
+
+	function clearPost($POST){
+		foreach($POST as $key => $value){
+		   $_POST[$key] = strip_tags($value);
+		  }
+	}
 	
 
 	add_action( 'after_setup_theme', 're_setup_template' );
@@ -37,101 +26,234 @@
 		
 		add_image_size( 'tiny', 78, 81, true );
 		add_image_size( 'thumb', 456, 424, true );
-		add_image_size( 'preview', 460, 470, true );
-		add_image_size( 'previewx2', 920, 940, true );
 
-		add_image_size( 'slider', 984, 603, true );
+		add_image_size( 'client', 415, 130, true );
+		add_image_size( 'client_square', 415, 415, true );
 
-		register_nav_menus( array( 'side-menu' => __( 'Боковое меню', 'desadent')  ) );
-		register_nav_menus( array( 'top-menu' => __( 'Верхнее меню', 'desadent')  ) );
+		add_image_size( 'slider', 542, 542, true );
+
+		register_nav_menus( array( 'footer-menu' => __( 'Нижнее меню', 'rebrand')  ) );
+		register_nav_menus( array( 'top-menu' => __( 'Верхнее меню', 'rebrand')  ) );
 	}
 
 
 	// Ajax cart update
-	add_action('wp_ajax_re_update_cart', 're_update_cart');
-	add_action('wp_ajax_nopriv_re_update_cart', 're_update_cart' );
-	function re_update_cart() {
-		if ( !empty($_POST['id']) or !empty($_POST['quantity']) ) {
+	add_action('wp_ajax_re_update_guru', 're_update_guru');
+	add_action('wp_ajax_nopriv_re_update_guru', 're_update_guru' );
+	function re_update_guru() {
+		unset( $_POST['action'] );
 
-			$cart = $_SESSION['mjasnickaja_cart'];
+		if( isset($_POST['step-1']) and isset($_POST['step-6']) ){
 
-			$id = strip_tags($_POST['id']);
-			$quantity = strip_tags($_POST['quantity']);
+			$post_title = 'временная заявка - ' . current_time('d.m.Y H:i:s');
+			$postarray = array(
+			  'post_content'   => '',
+			  'post_name'      => sanitize_title($post_title),
+			  'post_title'     => $post_title,
+			  'post_status'    => 'draft',
+			  'post_type'      => 'requests',
+			  'ping_status'    => 'closed',
+			  'comment_status' => 'closed'
+			);
 
-			$cart[$id] = array('id'=>$id, 'quantity'=>$quantity);
+			$post_id = wp_insert_post( $postarray );
 			
-			$_SESSION['mjasnickaja_cart'] = $cart;
+			$meta = array();
+			
+			foreach ($_POST as $key => $value) {
+				$vopros = '';
+				if( $key == 'step-1') $vopros = 'Сфера бизнеса';
+				if( $key == 'step-2') $vopros = 'Заказ';
+				if( $key == 'step-3') $vopros = 'Юридическая помощь';
+				if( $key == 'step-4') $vopros = 'Фон для';
+				if( $key == 'step-5') $vopros = 'Установка оборудования';
+				if( $key == 'step-6') $vopros = 'Пользовались раньше';
+				if( $key == 'step-7') $vopros = 'Пожелания';
 
-			echo 'ok';
-
-			die();
-		} else {
-			die();
-		}
-	}
-
-
-	// Ajax favorite update
-	add_action('wp_ajax_re_update_favs', 're_update_favs');
-	add_action('wp_ajax_nopriv_re_update_favs', 're_update_favs' );
-	function re_update_favs() {
-		if ( !empty($_POST['id']) ) {
-			$favs = $_SESSION['mjasnickaja_favs'];
-			$id = strip_tags($_POST['id']);
-
-			if(in_array($id, $favs)){
-				$n_favs = array();
-				foreach ($favs as $key => $value) {
-					if($id == $value) continue;
-					$n_favs[] = $value;
+				$strip_value = array();
+				foreach($value as $keys => $val){
+				   $strip_value[$keys] = strip_tags( strval($val) );
 				}
-				$favs = $n_favs;
-			}else{
-				$favs[] = $id;
+
+				$meta[ $key ] = array(
+					'vopros' => $vopros,
+					'otvet' => $strip_value
+				);
+
+				//print_r( $strip_value );
 			}
 
-			$_SESSION['mjasnickaja_favs'] = $favs;
-			echo 'ok';
-			die();
-		} else {
-			die();
+			update_post_meta($post_id, 're_request_meta', $meta);
+
+			//print_r( $strip_value );
+			echo $post_id;
+		}else{
+			echo 'not ok';
 		}
+		die();
 	}
 
 
-	add_action('wp_ajax_re_cart_items_num', 're_cart_items_num');
-	add_action('wp_ajax_nopriv_re_cart_items_num', 're_cart_items_num' );
-	function re_cart_items_num(){
-		$cart = $_SESSION['mjasnickaja_cart'];
+	//re_save_guru
+	add_action('wp_ajax_re_save_guru', 're_save_guru');
+	add_action('wp_ajax_nopriv_re_save_guru', 're_save_guru' );
+	function re_save_guru() {
 
-		$num = count($cart);
-		/*foreach ($cart as $key => $value) {
-			$num = $num + $value['quantity'];
-		}*/
-		//print_r($cart);
-		echo $num;
+		if( isset($_POST['id']) and $_POST['id'] != '' and isset($_POST['any']) and $_POST['any'] != '' ){
+			$id = strip_tags( make_safe($_POST['id']) );
+			$any = strip_tags( make_safe($_POST['any']) );
+			$name = strip_tags( make_safe($_POST['name']) );
 
-		if (defined('DOING_AJAX') && DOING_AJAX) die();
+			$meta = get_post_meta($id, 're_request_meta', true);
+
+			$meta['client'] = array(
+									'name' => $name,
+									'contact' => $any
+								);
+
+			update_post_meta($id, 're_request_meta', $meta);
+
+			$post_title = $name . ' - заявка '.$id.' - ' . current_time('d.m.Y H:i:s');
+			wp_update_post(
+			        array (
+			          'ID'          => $id, 
+			          'post_title'  => $post_title,
+			          'post_name'	=> sanitize_title($post_title),
+			          'post_status' => 'pending'
+			));
+
+			//print_r( $meta );
+			$noreply = 'noreply@' . $_SERVER['SERVER_NAME'];
+
+			$headers = "From: ".$noreply."\r\n";
+			$headers .= "Reply-To: ".$noreply."\r\n";
+			$headers .= "Return-Path: ".$noreply."\r\n";
+			$headers .= "MIME-Version: 1.0\r\n";
+			$headers .= "Content-Type: text/html; charset=UTF-8\r\n";
+
+			if( wp_mail(__t('email'), 'Новая заявка!', newOrderMessage($id, $meta, true), $headers, '-f ' . $noreply ) ){
+				echo 'ok';
+			}else{
+				echo 'problem';
+			}
+
+		}else{
+			echo 'not ok';
+		}
+		die();
 	}
 
 
-	add_action('wp_ajax_re_favs_items_num', 're_favs_items_num');
-	add_action('wp_ajax_nopriv_re_favs_items_num', 're_favs_items_num' );
-	function re_favs_items_num(){
-		$favs = $_SESSION['mjasnickaja_favs'];
 
-		$num = count($favs);
-		/*foreach ($cart as $key => $value) {
-			$num = $num + $value['quantity'];
-		}*/
-		//print_r($cart);
-		echo $num;
+	function newOrderMessage($order_id, $meta, $toadmin = true){
 
-		if (defined('DOING_AJAX') && DOING_AJAX) die();
+		$client = $meta['client'];
+		unset($meta['client']);
+
+		
+		$message = "<html><body>";
+		
+		$message .= '<table style="width: 600px; text-align: left; padding: 5px 7px; margin: 0 auto;" cellspacing="0" cellpadding="5" border="0" class="">';
+		$message .= '<tbody>';
+		
+		$message .= '<tr>
+						<th style="background-color: #ffffff; text-align: left;"><img style="margin: 10px;" src="http://project.rebrand.ee/muzcafe/wp-content/themes/muzcafe/i/logo.png" alt="МузКафе" width="180" /></th>
+					</tr>';
+				
+		if( $toadmin ){		
+			/*
+			$message .= '<tr>';
+				$message .= '<td>';	
+					$message .= 	'<a href="http://bigmeat.ru/wp-admin/post.php?post='.$order_id.'&action=edit">Открыть заказ на сайте.</a>';
+			
+				$message .= '</td>';	
+			$message .= '</tr>';
+			*/
+		}else{
+			$message .= '<tr>';
+				$message .= '<td>';	
+				$message .= '<br/>';	
+				$message .= 	apply_filters('the_content', __t('order_thanks'));
+				
+				$message .= '</td>';	
+			$message .= '</tr>';
+		}
+		
+		$message .= 	'</tbody>';
+		$message .= 	'</table>';
+			
+			$message .= 	'<table style="width: 600px; margin: 0 auto; text-align: left; padding: 5px 7px;" cellspacing="0" cellpadding="5" border="0" class="">';
+			$message .= 	'<tbody>';
+			$message .= 	'<tr><th>';
+				$message .= 	'<h3 style="color: #c81e46;">'. __('Заявка:', 'Cart') .' '.$order_id.'</h3>';
+			$message .= 	'</th></tr>';
+			$message .= 	'</tbody>';
+			$message .= 	'</table>';
+			
+			
+			$message .= 	'<table style="width: 600px; margin: 0 auto; text-align: left; padding: 5px 7px;" cellspacing="0" cellpadding="5" border="0" class="">';
+			$message .= 	'<tbody>';
+			$message .= 	'<tr>
+								<th width="35%">Вопрос</th>
+								<th width="65%">Ответ</th>
+							</tr>';
+			$c = 0;
+			foreach($meta as $key => $met){
+				$message .= '<tr>';
+					$message .= '<td style="border-bottom: 1px dashed #ddd;">'.$met['vopros'].'</td>';
+					$message .= '<td style="border-bottom: 1px dashed #ddd;">';
+					foreach ($met['otvet'] as $key => $value) {
+						$message .= $value . '<br>';
+					}
+					$message .= '</td>';
+				$message .= '</tr>';
+			}
+		
+			$message .= 	'<tr>
+								<td></td>
+								<td></td>
+								<td></td>
+							</tr>';
+			
+			$message .= 	'</tbody>';
+			$message .= 	'</table>';
+			$message .= 	'<br/>';
+		
+		
+			if(!empty($client)){
+				
+				$message .= 	'<table style="width: 600px; margin: 0 auto; text-align: left; padding: 5px 7px;" cellspacing="0" cellpadding="5" border="0" class="">';
+				$message .= 	'<tbody>';
+				$message .= 	'<tr><th>';
+					if( $toadmin ){
+						$message .= 	'<h3 style="color: #c81e46;">Клиент</h3>';
+					}else{
+						$message .= 	'<h3 style="color: #c81e46;">Ваши контактные данные</h3>';
+					}
+				$message .= 	'</th></tr>';
+				$message .= 	'</tbody>';
+				$message .= 	'</table>';
+				
+				
+				$message .= 	'<table cellspacing="0" cellpadding="5" border="0" style="width: 600px; margin: 0 auto; text-align: left; padding: 5px 7px;">';
+				$message .= 	'<tbody>';
+			
+				$message .= 	'<tr><td width="25%"><strong>Имя:</strong></td><td>'. $client['name'] .'</td></tr>';
+				$message .= 	'<tr><td><strong>Контакт:</strong></td><td>'. $client['contact'] .'</td></tr>';
+				$message .= 	'<tr><td><strong></strong></td><td></td></tr>';
+				$message .= 	'<tr><td><strong></strong></td><td></td></tr>';
+				$message .= 	'</tbody>';
+				$message .= 	'</table>';
+			}
+		
+		$message .= "</body></html>";
+		
+		return $message;
 	}
 
 
-    
+
+
     if (function_exists('register_sidebar')) {
 		
 		foreach($lang_arr as $lang){
@@ -156,6 +278,22 @@
 		
 	}
 
+	function cc_mime_types($mimes) {
+	  $mimes['svg'] = 'image/svg+xml';
+	  return $mimes;
+	}
+	add_filter('upload_mimes', 'cc_mime_types');
+
+	function fix_svg_thumb_display() {
+	  echo '
+	    td.media-icon img[src$=".svg"], img[src$=".svg"].attachment-post-thumbnail { 
+	      width: 100% !important; 
+	      height: auto !important; 
+	    }
+	  ';
+	}
+	//add_action('admin_head', 'fix_svg_thumb_display');
+
 	
 	// Add RSS links to <head> section
 	automatic_feed_links();
@@ -165,6 +303,12 @@
 
 	//Meta boxes
 	include_once($functions_path . 'meta_box.php');
+	include_once($functions_path . 'meta_box_better.php');
+	include_once($functions_path . 'order_meta.php');
+
+
+	//Meta boxes
+	include_once($functions_path . 'menu_classes.php');
 	
 	
 	//Shortcodes
@@ -181,7 +325,7 @@
 	function make_blog_name_from_name($name = '') {
 		return get_bloginfo('name');
 	}
-	function make_blog_email_from_host( $email_address ){
+	function make_blog_email_from_host( $email_address = null ){
 		return 'noreply@' . $_SERVER['SERVER_NAME'];
 	}
 	add_filter('wp_mail_from_name', 'make_blog_name_from_name');

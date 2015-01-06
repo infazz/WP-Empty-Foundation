@@ -18,9 +18,6 @@ add_filter( 'rwmb_meta_boxes', 'your_prefix_register_meta_boxes' );
 
 function your_prefix_register_meta_boxes( $meta_boxes ){
 
-	include_once('countries.php');
-	include_once('body.php');
-
 	$prefix = 're_';
 
 	// 1st meta box
@@ -28,221 +25,279 @@ function your_prefix_register_meta_boxes( $meta_boxes ){
 		// Meta box id, UNIQUE per meta box. Optional since 4.1.5
 		'id' => 'standard',
 		'title' => __( 'Настроики', 'meta-box' ),
-		'pages' => array( 'post' ),
+		'pages' => array( 'team' ),
 		'context' => 'normal',
 		'priority' => 'high',
 		'autosave' => true,
 
 		// List of meta fields
 		'fields' => array(
+			
+
 			// TEXT
 			array(
-				'name'  => __( 'Цена', 'meta-box' ),
-				'id'    => "{$prefix}price",
-				'desc'  => __( 'в рублях', 'meta-box' ),
-				'type'  => 'text',
-				'std'   => '',
-				'clone' => false,
-			),
-
-			array(
-				'name'  => __( 'Количество', 'meta-box' ),
-				'id'    => "{$prefix}quantity",
-				'desc'  => __( 'на складе', 'meta-box' ),
-				'type'  => 'text',
-				'std'   => '',
-				'clone' => false,
-			),
-
-			array(
-				'name'  => __( 'Вес', 'meta-box' ),
-				'id'    => "{$prefix}weight",
+				'name'  => 'Пояснение',
+				'id'    => "{$prefix}description",
 				'desc'  => '',
 				'type'  => 'text',
 				'std'   => '',
 				'clone' => false,
-			),
-			// DIVIDER
-			array(
-				'type' => 'divider',
-				'id'   => 'fake_divider_id', // Not used, but needed
-			),
-
-			// SELECT ADVANCED BOX
-			array(
-				'name'     => __( 'Cтрана производитель', 'meta-box' ),
-				'id'       => "{$prefix}country",
-				'type'     => 'select_advanced',
-				// Array of 'value' => 'Label' pairs for select box
-				'options'  => $countries,
-				// Select multiple values, optional. Default is false.
-				'multiple'    => false,
-				// 'std'         => 'value2', // Default value, optional
-				'placeholder' => __( '---', 'meta-box' ),
-			),
-			// DIVIDER
-			array(
-				'type' => 'divider',
-				'id'   => 'fake_divider_id', // Not used, but needed
-			),
-
-			// SELECT ADVANCED BOX
-			array(
-				'name'     => __( 'Часть', 'meta-box' ),
-				'id'       => "{$prefix}bodypiece",
-				'type'     => 'select_advanced',
-				'desc'  => 'Tолько для говядины',
-				// Array of 'value' => 'Label' pairs for select box
-				'options'  => $body,
-				// Select multiple values, optional. Default is false.
-				'multiple'    => false,
-				// 'std'         => 'value2', // Default value, optional
-				'placeholder' => __( '---', 'meta-box' ),
-			),
-
-
-			// DIVIDER
-			array(
-				'type' => 'divider',
-				'id'   => 'fake_divider_id', // Not used, but needed
-			),
-			array(
-				'name'  => __( 'Доп. описание', 'meta-box' ),
-				'id'    => "{$prefix}moreinfo",
-				'desc'  => '',
-				'type'  => 'text',
-				'std'   => '',
-				'clone' => true,
-			),
-			// DIVIDER
-			array(
-				'type' => 'divider',
-				'id'   => 'fake_divider_id', // Not used, but needed
 			),
 
 			// TEXTAREA
 			array(
-				'name' => __( 'Краткое описание', 'meta-box' ),
+				'name' => 'Описание',
 				'desc' => '',
-				'id'   => "{$prefix}description",
+				'id' => "{$prefix}text",
 				'type' => 'textarea',
 				'cols' => 20,
 				'rows' => 3,
 			),
-			// DIVIDER
-			array(
-				'type' => 'divider',
-				'id'   => 'fake_divider_id', // Not used, but needed
-			),
-
-
-			// IMAGE ADVANCED (WP 3.5+)
-			array(
-				'name'             => __( 'Картинки', 'meta-box' ),
-				'id'               => "{$prefix}imgages",
-				'type'             => 'image_advanced',
-				'max_file_uploads' => 10,
-			),
-			// DIVIDER
-			array(
-				'type' => 'divider',
-				'id'   => 'fake_divider_id', // Not used, but needed
-			),
-
-			array(
-				'name'  => __( 'Видео', 'meta-box' ),
-				'id'    => "{$prefix}vimeo",
-				'desc'  => 'ссылка на Vimeo. Пример: http://vimeo.com/108128386',
-				'type'  => 'text',
-				'std'   => '',
-				'clone' => true,
-			),
-
-		/*
-			// CHECKBOX
-			array(
-				'name' => __( 'Checkbox', 'meta-box' ),
-				'id'   => "{$prefix}checkbox",
-				'type' => 'checkbox',
-				// Value can be 0 or 1
-				'std'  => 1,
-			),
-			// RADIO BUTTONS
-			array(
-				'name'    => __( 'Radio', 'meta-box' ),
-				'id'      => "{$prefix}radio",
-				'type'    => 'radio',
-				// Array of 'value' => 'Label' pairs for radio options.
-				// Note: the 'value' is stored in meta field, not the 'Label'
-				'options' => array(
-					'value1' => __( 'Label1', 'meta-box' ),
-					'value2' => __( 'Label2', 'meta-box' ),
-				),
-			),
-			// SELECT BOX
-			array(
-				'name'     => __( 'Select', 'meta-box' ),
-				'id'       => "{$prefix}select",
-				'type'     => 'select',
-				// Array of 'value' => 'Label' pairs for select box
-				'options'  => array(
-					'value1' => __( 'Label1', 'meta-box' ),
-					'value2' => __( 'Label2', 'meta-box' ),
-				),
-				// Select multiple values, optional. Default is false.
-				'multiple'    => false,
-				'std'         => 'value2',
-				'placeholder' => __( 'Select an Item', 'meta-box' ),
-			),
-			// HIDDEN
-			array(
-				'id'   => "{$prefix}hidden",
-				'type' => 'hidden',
-				// Hidden field must have predefined value
-				'std'  => __( 'Hidden value', 'meta-box' ),
-			),
-			// PASSWORD
-			array(
-				'name' => __( 'Password', 'meta-box' ),
-				'id'   => "{$prefix}password",
-				'type' => 'password',
-			),
-			// TEXTAREA
-			array(
-				'name' => __( 'Textarea', 'meta-box' ),
-				'desc' => __( 'Textarea description', 'meta-box' ),
-				'id'   => "{$prefix}textarea",
-				'type' => 'textarea',
-				'cols' => 20,
-				'rows' => 3,
-			),
-		*/
+			
 		)	
 	);
+
 
 
 	$meta_boxes[] = array(
 		// Meta box id, UNIQUE per meta box. Optional since 4.1.5
 		'id' => 'standard',
 		'title' => __( 'Настроики', 'meta-box' ),
-		'pages' => array( 'part' ),
+		'pages' => array( 'business' ),
 		'context' => 'normal',
 		'priority' => 'high',
 		'autosave' => true,
 
 		// List of meta fields
 		'fields' => array(
+			
+
+			// SELECT BOX
+			array(
+				'name'     => 'Стиль',
+				'id'       => "{$prefix}class",
+				'type'     => 'select',
+				// Array of 'value' => 'Label' pairs for select box
+				'options'  => array(
+					'blue_warm' => 'Синий (тёплый)',
+					'blue_cold' => 'Синий (холодный)',
+					'yellow_warm' => 'Жёлтый (тёплый)',
+					'yellow_cold' => 'Жёлтый (холодный)',
+					'violet' => 'Фиолетовый',
+					'green_warm' => 'Зелёный (тёплый)',
+					'green_cold' => 'Зелёный (холодный)',
+					'red' => 'Красный',
+					'gray' => 'Серый',
+					'pink' => 'Розовый',
+				),
+				// Select multiple values, optional. Default is false.
+				'multiple'    => false,
+				'std'         => 'blue_warm',
+				'placeholder' => 'Выберите цвет',
+			),
+
+
 			// TEXT
 			array(
-				'name'  => __( 'Название', 'meta-box' ),
-				'id'    => "{$prefix}name",
+				'name'  => 'Пояснение',
+				'id'    => "{$prefix}description",
 				'desc'  => '',
 				'type'  => 'text',
 				'std'   => '',
 				'clone' => false,
 			),
+			
+		)	
+	);
+
+
+	$meta_boxes[] = array(
+		// Meta box id, UNIQUE per meta box. Optional since 4.1.5
+		'id' => 'box1',
+		'title' => 'Контент',
+		'pages' => array( 'business' ),
+		'context' => 'normal',
+		'priority' => 'high',
+		'autosave' => true,
+
+		// List of meta fields
+		'fields' => array(
+
+			// HEADING
+			array(
+				'type' => 'heading',
+				'name' => 'Расшифровка видов бизнеса',
+				'id'   => 'fake_id', // Not used but needed for plugin
+			),
+			// WYSIWYG/RICH TEXT EDITOR
+			array(
+				'name' => '',
+				'id'   => "{$prefix}box_1",
+				'type' => 'wysiwyg',
+				// Set the 'raw' parameter to TRUE to prevent data being passed through wpautop() on save
+				'raw'  => false,
+				'std'  => '',
+
+				// Editor settings, see wp_editor() function: look4wp.com/wp_editor
+				'options' => array(
+					'textarea_rows' => 4,
+					'teeny'         => false,
+					'media_buttons' => true,
+				),
+			),
+			// DIVIDER
+			array(
+				'type' => 'divider',
+				'id'   => 'fake_divider_id', // Not used, but needed
+			),
+
+
+
+			// HEADING
+			array(
+				'type' => 'heading',
+				'name' => 'Преимущества аудиомаркетинга',
+				'id'   => 'fake_id', // Not used but needed for plugin
+			),
+			// WYSIWYG/RICH TEXT EDITOR
+			array(
+				'name' => '',
+				'id'   => "{$prefix}box_2",
+				'type' => 'wysiwyg',
+				// Set the 'raw' parameter to TRUE to prevent data being passed through wpautop() on save
+				'raw'  => false,
+				'std'  => '',
+
+				// Editor settings, see wp_editor() function: look4wp.com/wp_editor
+				'options' => array(
+					'textarea_rows' => 4,
+					'teeny'         => false,
+					'media_buttons' => true,
+				),
+			),
+			// DIVIDER
+			array(
+				'type' => 'divider',
+				'id'   => 'fake_divider_id', // Not used, but needed
+			),
+
+
+
+			// HEADING
+			array(
+				'type' => 'heading',
+				'name' => 'Услуги «МузКафе» по аудиомаркетингу',
+				'id'   => 'fake_id', // Not used but needed for plugin
+			),
+			// WYSIWYG/RICH TEXT EDITOR
+			array(
+				'name' => '',
+				'id'   => "{$prefix}box_3",
+				'type' => 'wysiwyg',
+				// Set the 'raw' parameter to TRUE to prevent data being passed through wpautop() on save
+				'raw'  => false,
+				'std'  => '',
+
+				// Editor settings, see wp_editor() function: look4wp.com/wp_editor
+				'options' => array(
+					'textarea_rows' => 4,
+					'teeny'         => false,
+					'media_buttons' => true,
+				),
+			),
+			// DIVIDER
+			array(
+				'type' => 'divider',
+				'id'   => 'fake_divider_id', // Not used, but needed
+			),
+
+
+
+			// HEADING
+			array(
+				'type' => 'heading',
+				'name' => 'ПРИМЕР АУДИО ОФОРМЛЕНИЯ',
+				'id'   => 'fake_id', // Not used but needed for plugin
+			),
+			// FILE ADVANCED (WP 3.5+)
+            array(
+                'name' => 'MP3',
+                'id' => "{$prefix}mp3",
+                'type' => 'file_advanced',
+                'max_file_uploads' => 10,
+                'mime_type' => 'audio/mpeg', // Leave blank for all file types
+            ),
+			// DIVIDER
+			array(
+				'type' => 'divider',
+				'id'   => 'fake_divider_id', // Not used, but needed
+			),
+
+
+
+			// HEADING
+			array(
+				'type' => 'heading',
+				'name' => 'ПРИБЛЕЗИТЕЛЬНАЯ СТОИМОСТЬ аудио оформления',
+				'id'   => 'fake_id', // Not used but needed for plugin
+			),
+
+			// TEXT
+			array(
+				'name'  => 'От',
+				'id'    => "{$prefix}price_from",
+				'desc'  => '',
+				'type'  => 'text',
+				'std'   => '',
+				'clone' => false,
+			),
+
+			// TEXT
+			array(
+				'name'  => 'До',
+				'id'    => "{$prefix}price_till",
+				'desc'  => '',
+				'type'  => 'text',
+				'std'   => '',
+				'clone' => false,
+			),
+
+
+			// TEXT
+			array(
+				'name'  => 'Единица измерения',
+				'id'    => "{$prefix}price",
+				'desc'  => '',
+				'type'  => 'text',
+				'std'   => '',
+				'clone' => false,
+			),
+			// WYSIWYG/RICH TEXT EDITOR
+			array(
+				'name' => '',
+				'id'   => "{$prefix}box_4",
+				'type' => 'wysiwyg',
+				// Set the 'raw' parameter to TRUE to prevent data being passed through wpautop() on save
+				'raw'  => false,
+				'std'  => '',
+
+				// Editor settings, see wp_editor() function: look4wp.com/wp_editor
+				'options' => array(
+					'textarea_rows' => 4,
+					'teeny'         => false,
+					'media_buttons' => true,
+				),
+			),
+			// DIVIDER
+			array(
+				'type' => 'divider',
+				'id'   => 'fake_divider_id', // Not used, but needed
+			),
 		)
 	);
+
+
+
 
 	// 2nd meta box
 	$meta_boxes_[] = array(
