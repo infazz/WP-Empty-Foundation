@@ -129,7 +129,7 @@
 	
 	
 	function make_safe($variable) {
-	    $variable = strip_tags((trim($variable));
+	    $variable = strip_tags(trim($variable));
 	    return $variable;
 	}
 
