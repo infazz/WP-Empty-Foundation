@@ -1,6 +1,6 @@
 <?php get_header(); ?>
 
-<section id="slides">
+<div id="slides">
 	<?php 
 		$args = array(
 				'post_type' => 'slider',
@@ -33,7 +33,7 @@
 			
 		endwhile; endif;
 	?>
-</section>
+</div>
 
 <?php get_sidebar(); ?>
 
