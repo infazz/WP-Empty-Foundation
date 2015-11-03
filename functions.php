@@ -3,26 +3,24 @@
 	$functions_path = TEMPLATEPATH . '/functions/';	
 	require_once ( TEMPLATEPATH . '/options/options.php' );
 
-	// Get language code from qTranslate or WPML if one of plugin is enabled
-	if( function_exists('qtrans_getLanguage')){
-		$lang = qtrans_getLanguage();
-	}else if( function_exists('icl_get_languages')){
+	// Get language code from WPML if one of plugin is enabled
+	if( function_exists('icl_get_languages')){
 		$lang = ICL_LANGUAGE_CODE;
 	}else{
 		$default_lang = explode('-', get_bloginfo( 'language' ));
 		$lang = $default_lang[0];
 	}
-	
-	$re_opt = get_option( 're_opt' ); 
+
+	$txt = get_option( 're_opt_'.$lang ); 
 
 	function _t($val){
-		global $lang, $re_opt;
-		echo $re_opt[$val.'_'.$lang];
+		global $txt;
+		echo $txt[$val];
 	}
 
 	function __t($val){
-		global $lang, $re_opt;
-		return $re_opt[$val.'_'.$lang];
+		global $txt;
+		return $txt[$val];
 	}
 
 	//Category meta
