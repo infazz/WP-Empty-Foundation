@@ -1,7 +1,40 @@
 <?php
+	//
+	// BlueGlass Interactive
+	//
+
 
 	$functions_path = TEMPLATEPATH . '/functions/';	
+
+
+	// Add RSS links to <head> section
+	add_theme_support( 'automatic-feed-links' );
+
+	// Theme options page
 	require_once ( TEMPLATEPATH . '/options/options.php' );
+
+	//Post types
+	//include_once($functions_path . 'post_types.php');
+
+	//Meta boxes
+	//include_once($functions_path . 'menu_classes.php');
+	
+	//Shortcodes
+	require_once $functions_path . 'theme_shortcodes/shortcodes.php';
+	//include_once($functions_path . 'theme_shortcodes/alert.php');
+	include_once($functions_path . 'theme_shortcodes/tabs.php');
+	include_once($functions_path . 'theme_shortcodes/toggle.php');
+	//include_once($functions_path . 'theme_shortcodes/html.php');
+
+	if( is_admin() ){
+		// Taxonomy custom fields
+		//include_once($functions_path . 'category-meta.php');
+
+		//tinyMCE includes
+		include_once($functions_path . 'theme_shortcodes/tinymce_shortcodes.php');
+		include_once($functions_path . '/add_thumbs_to_admin.php');
+	}
+
 
 	// Get language code from WPML if one of plugin is enabled
 	if( function_exists('icl_get_languages')){
@@ -31,7 +64,7 @@
 	function re_setup_template(){
 		add_theme_support( 'post-thumbnails' );
 		
-		add_image_size( 'tiny', 78, 81, true );
+		//add_image_size( 'tiny', 78, 81, true );
 
 		register_nav_menus( array( 'top-menu' => __( 'Top menu', 'rebrand')  ) );
 	}
@@ -92,28 +125,6 @@
 	  ';
 	}
 	//add_action('admin_head', 'fix_svg_thumb_display');
-
-	
-	// Add RSS links to <head> section
-	automatic_feed_links();
-
-	//Posttypes
-	//include_once($functions_path . 'post_types.php');
-
-
-	//Meta boxes
-	//include_once($functions_path . 'menu_classes.php');
-	
-	
-	//Shortcodes
-	require_once $functions_path . 'theme_shortcodes/shortcodes.php';
-	//include_once($functions_path . 'theme_shortcodes/alert.php');
-	include_once($functions_path . 'theme_shortcodes/tabs.php');
-	include_once($functions_path . 'theme_shortcodes/toggle.php');
-	//include_once($functions_path . 'theme_shortcodes/html.php');
-
-	//tinyMCE includes
-	include_once($functions_path . 'theme_shortcodes/tinymce_shortcodes.php');
 	
 	
 	function make_blog_name_from_name($name = '') {
@@ -209,7 +220,6 @@
     //add_theme_support( 'post-formats', array('aside', 'gallery', 'link', 'image', 'quote', 'status', 'audio', 'chat', 'video')); // Add 3.1 post format theme support.
 		
 	
-	include_once($functions_path . '/add_thumbs_to_admin.php');
 	
 	
 		
@@ -287,6 +297,28 @@
 		}
 	 }
 	//add_filter('get_pagenum_link', 'qtranslate_next_previous_fix');
+
+
+	function wp_corenavi() {
+	  	global $wp_query;
+	  	$pages = '';
+	  	$max = $wp_query->max_num_pages;
+	  	if (!$current = get_query_var('paged')) $current = 1;
+	  	$a['base'] = str_replace(999999999, '%#%', get_pagenum_link(999999999));
+	  	$a['total'] = $max;
+	  	$a['current'] = $current;
+
+	  	$total = 1; 
+	  	$a['mid_size'] = 3; 
+	  	$a['end_size'] = 1;
+	  	$a['prev_text'] = '&laquo;'; 
+	  	$a['next_text'] = '&raquo;'; 
+
+	  	if ($max > 1) echo '<div class="navigation column medium-12">';
+	  	if ($total == 1 && $max > 1) $pages = '<span class="pages">' . __('Page', 'blueglass') . $current . ' ' . __('of', 'blueglass') . ' ' . $max . '</span>'."\r\n";
+	  	echo $pages . paginate_links($a);
+	 	if ($max > 1) echo '</div>';
+	}
 
 	
 

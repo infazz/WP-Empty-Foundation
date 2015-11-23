@@ -5,4 +5,3 @@
 	</span>
 	<?php comments_popup_link('No Comments', '1 Comment', '% Comments', 'comments-link', ''); ?>
 </footer>
-<?php _e('Thetext'); ?>
