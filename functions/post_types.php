@@ -36,7 +36,7 @@
 		//register_taxonomy('posttype_category', 'portfolio', array('hierarchical' => true, 'label' => 'Posttype Categories', 'singular_name' => 'Category', "rewrite" => true, "query_var" => true));
 	}
 
-	add_action('init', 'my_post_type_requests');
+	//add_action('init', 'my_post_type_requests');
 
 
 
@@ -68,7 +68,7 @@
 		//register_taxonomy('posttype_category', 'portfolio', array('hierarchical' => true, 'label' => 'Posttype Categories', 'singular_name' => 'Category', "rewrite" => true, "query_var" => true));
 	}
 
-	add_action('init', 'my_post_type_team');
+	//add_action('init', 'my_post_type_team');
 
 
 
@@ -100,7 +100,7 @@
 		//register_taxonomy('posttype_category', 'portfolio', array('hierarchical' => true, 'label' => 'Posttype Categories', 'singular_name' => 'Category', "rewrite" => true, "query_var" => true));
 	}
 
-	add_action('init', 'my_post_type_slider');
+	//add_action('init', 'my_post_type_slider');
 
 
 	function my_post_type_business() {
@@ -129,7 +129,7 @@
 		//register_taxonomy('posttype_category', 'portfolio', array('hierarchical' => true, 'label' => 'Posttype Categories', 'singular_name' => 'Category', "rewrite" => true, "query_var" => true));
 	}
 
-	add_action('init', 'my_post_type_business');
+	//add_action('init', 'my_post_type_business');
 
 
 
@@ -160,5 +160,5 @@
 		//register_taxonomy('posttype_category', 'portfolio', array('hierarchical' => true, 'label' => 'Posttype Categories', 'singular_name' => 'Category', "rewrite" => true, "query_var" => true));
 	}
 
-	add_action('init', 'my_post_type_client');
+	//add_action('init', 'my_post_type_client');
 ?>
