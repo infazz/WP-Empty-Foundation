@@ -1,4 +1,4 @@
-# WordPress Foundation 6 Starter Template
+# WordPress Foundation 5.5 Starter Template
 
 
 ## Includes

@@ -40,14 +40,28 @@
 </head>
 
 <body <?php body_class(); ?>>
+
+<div class="off-canvas-wrap" data-offcanvas>
+  	<div class="inner-wrap">
+
+    <a class="left-off-canvas-toggle" href="#" >Menu</a>
+
+    <!-- Off Canvas Menu -->
+    <aside class="left-off-canvas-menu">
+        <!-- whatever you want goes here -->
+        <ul>
+          <li><a href="#">Item 1</a></li>
+        ...
+        </ul>
+    </aside>
 	
-	<div id="page-wrap">
+		<div id="page-wrap">
 
-		<header id="header">
-			<h1><a href="<?php echo get_option('home'); ?>/"><?php bloginfo('name'); ?></a></h1>
-			<div class="description"><?php bloginfo('description'); ?></div>
+			<header id="header">
+				<h1><a href="<?php echo get_option('home'); ?>/"><?php bloginfo('name'); ?></a></h1>
+				<div class="description"><?php bloginfo('description'); ?></div>
 
-			
-			<?php wp_nav_menu( array( 'depth' => 6, 'sort_column' => 'menu_order', 'container' => 'ul', 'menu_id' => 'main-nav', 'menu_class' => 'nav', 'theme_location' => 'top-menu' ) ); ?>
-		</header>
+				
+				<?php wp_nav_menu( array( 'depth' => 6, 'sort_column' => 'menu_order', 'container' => 'ul', 'menu_id' => 'main-nav', 'menu_class' => 'nav', 'theme_location' => 'top-menu' ) ); ?>
+			</header>
 
