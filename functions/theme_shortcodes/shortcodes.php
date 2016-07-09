@@ -145,19 +145,18 @@ function dropcap_shortcode($atts, $content = null) {
     extract(shortcode_atts(
         array(
             'num' => '1',
-            'grid' => '6',
             'heading' => '',
             'text' => '',
             'class' => 'white'
     ), $atts));
 
-    $svg = get_bloginfo('template_url') . '/i/dropcap.svg';
-    $svg = file_get_contents($svg);
+    //$svg = get_bloginfo('template_url') . '/i/dropcap.svg';
+    //$svg = file_get_contents($svg);
 
-    $output = '<div class="dropcap columns medium-'.$grid.' color-'.$class.' fix_dropcap">';
+    $output = '<div class="dropcap columns medium-12 color-'.$class.' fix_dropcap">';
 	    $output .= '<div class="cap">';
 	    	$output .= '<div class="num">'.$num.'</div>'; 	
-	    	$output .= $svg;
+	    	//$output .= $svg;
 	    $output .= '</div>';
 	    $output .= '<div class="wr">';
 	    	$output .= '<h3>'.$heading.'</h3>';

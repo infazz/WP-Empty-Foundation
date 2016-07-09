@@ -2,9 +2,8 @@
 
 	<?php if (have_posts()) : ?>
 
-		<h2>Search Results</h2>
+		<h2><?php _e('Search Results', 'blueglass'); ?></h2>
 
-		<?php include (TEMPLATEPATH . '/_/inc/nav.php' ); ?>
 
 		<?php while (have_posts()) : the_post(); ?>
 
@@ -12,7 +11,7 @@
 
 				<h2><?php the_title(); ?></h2>
 
-				<?php include (TEMPLATEPATH . '/_/inc/meta.php' ); ?>
+				<?php include (TEMPLATEPATH . '/inc/meta.php' ); ?>
 
 				<div class="entry">
 
@@ -23,8 +22,6 @@
 			</article>
 
 		<?php endwhile; ?>
-
-		<?php include (TEMPLATEPATH . '/_/inc/nav.php' ); ?>
 
 	<?php else : ?>
 

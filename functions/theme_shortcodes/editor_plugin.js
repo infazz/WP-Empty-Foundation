@@ -11,29 +11,9 @@
 					text: 'UI',
 					menu: [
 						{
-							text: 'Name',
-							onclick: function() {
-								tinymce.activeEditor.execCommand('nameCMD');
-								//editor.insertContent('[name title="Илья Семёнов" subtitle="Руководитель компании «МузКафе»" color="#34aeaf"]');
-							}
-						},
-						{
-							text: 'Кнопка',
+							text: 'Button',
 							onclick: function() {
 								tinymce.activeEditor.execCommand('buttonCMD');
-								//editor.insertContent('[name title="Илья Семёнов" url="#url" class="red"]');
-							}
-						},
-						{
-							text: 'Шаг',
-							onclick: function() {
-								editor.insertContent('[step num="1"]Текст шага. Макс. количество шагов 3.[/step]');
-							}
-						},
-						{
-							text: 'Box',
-							onclick: function() {
-								editor.insertContent('[box]Your content goes here.[/box]');
 							}
 						},
 						{
@@ -52,13 +32,7 @@
 						{
 							text: 'Tabs',
 							onclick: function() {
-								editor.insertContent('[tabs tab1="Title #1" tab2="Title #2"] [tab1] Tab 1 content... [/tab1] [tab2] Tab 2 content... [/tab2] [/tabs]');
-							}
-						},
-						{
-							text: 'Left content',
-							onclick: function() {
-								editor.insertContent('[left] Your info here [/left]');
+								editor.insertContent('[tabs tab1="Title #1" tab2="Title #2"][tab1] Tab 1 content... [/tab1][tab2] Tab 2 content... [/tab2][/tabs]');
 							}
 						},
 						{
@@ -69,28 +43,24 @@
 							}
 						},
 						{
-							text: 'Timeline',
+							text: 'Box',
 							onclick: function() {
-								editor.insertContent('[timeline]');
+								editor.insertContent('[box]Your content goes here.[/box]');
 							}
 						},
+						/*
 						{
-							text: 'People',
+							text: 'Shortcode name',
 							onclick: function() {
 								editor.insertContent('[people medium="6" large="4"]');
 							}
 						}
+						*/
 					]
 				},
                 {
 					text: 'Grid Elements',
 					menu: [
-                        {
-							text: 'Wrap',
-							onclick: function() {
-								editor.insertContent('[wrap] Your info here [/wrap]');
-							}
-						},
 						{
 							text: 'Clearfix',
 							onclick: function() {
@@ -106,7 +76,7 @@
 						{
 							text: 'Grid element',
 							onclick: function() {
-								editor.insertContent('[grid medium="6" large="4"]Your content here[/grid]');
+								editor.insertContent('[grid medium="6" large="4" class=""]Your content here[/grid]');
 							}
 						}
 					]
@@ -119,7 +89,6 @@
 			        num: '',
 			        heading: '',
 			        text: '',
-			        grid: '6',
 			        class: 'white'
 			    };
 			    editor.windowManager.open({
@@ -129,7 +98,7 @@
 			            {
 			                name: 'num',
 			                type: 'textbox',
-			                label: 'Номер/Буква',
+			                label: 'Number/Character',
 			                value: data.num,
 			                onchange: function() { data.num = this.value(); }
 			            },
@@ -139,7 +108,7 @@
 			                'multiline': 'true', 
 			                'minHeight': '60',
 			                'minWidth': 300,
-			                label: 'Зоголовок',
+			                label: 'Title',
 			                value: data.heading,
 			                onchange: function() { data.heading = this.value(); }
 			            },
@@ -149,62 +118,46 @@
 			                'multiline': 'true', 
 			                'minHeight': '120',
 			                'minWidth': 300,
-			                label: 'Текст',
+			                label: 'Text',
 			                value: data.text,
 			                onchange: function() { data.text = this.value(); }
 			            },
 			            {
-			                name: 'grid',
-			                type: 'listbox',
-			                label: 'Стиль',
-			                values: [
-			                    {
-			                        value: '6',
-			                        text: '6/12'
-			                    },
-			                    {
-			                        value: '12',
-			                        text: '12/12'
-			                    },
-			                ],
-			                onchange: function() { data.grid = this.value(); }
-			            },
-			            {
 			                name: 'class',
 			                type: 'listbox',
-			                label: 'Стиль',
+			                label: 'Style',
 			                values: [
 			                    {
 			                        value: 'white',
-			                        text: 'Белый'
+			                        text: 'White'
 			                    },
 			                    {
 			                        value: 'yellow',
-			                        text: 'Жёлтый'
+			                        text: 'Yellow'
 			                    },
 			                    {
 			                        value: 'orange',
-			                        text: 'Оранжевый'
+			                        text: 'Orange'
 			                    },
 			                    {
 			                        value: 'pink',
-			                        text: 'Розовый'
+			                        text: 'Pink'
 			                    },
 			                    {
 			                        value: 'violet',
-			                        text: 'Фиолетовый'
+			                        text: 'Violet'
 			                    },
 			                    {
 			                        value: 'blue',
-			                        text: 'Синий'
+			                        text: 'Blue'
 			                    },
 			                    {
 			                        value: 'green',
-			                        text: 'Зелёная'
+			                        text: 'Green'
 			                    },
 			                    {
 			                        value: 'green_light',
-			                        text: 'Ярко зелёная'
+			                        text: 'Light green'
 			                    },
 			                ],
 			                onchange: function() { data.class = this.value(); }
@@ -215,7 +168,6 @@
 			            data = tinymce.extend(data, e.data);
 			 
 			            shortcode += ' num="' + data.num + '"';
-			            shortcode += ' grid="' + data.grid + '"';
 			            shortcode += ' class="' + data.class + '"';
 			            shortcode += ' heading="' + data.heading + '"';
 			            shortcode += ' text="' + data.text + '"';
@@ -228,116 +180,37 @@
 			});
 
 
-			editor.addCommand('nameCMD', function() {
-			    var data = {
-			        title: '',
-			        subtitle: '',
-			        class: 'green'
-			    };
-			    editor.windowManager.open({
-			        title: 'Подпись',
-			        data: data,
-			        body: [
-			            {
-			                name: 'title',
-			                type: 'textbox',
-			                label: 'Имя',
-			                value: data.title,
-			                onchange: function() { data.title = this.value(); }
-			            },
-			            {
-			                name: 'subtitle',
-			                type: 'textbox',
-			                label: 'Позиция',
-			                value: data.url,
-			                onchange: function() { data.subtitle = this.value(); }
-			            },
-			            {
-			                name: 'class',
-			                type: 'listbox',
-			                label: 'Стиль',
-			                values: [
-			                    {
-			                        value: 'red',
-			                        text: 'Красная'
-			                    },
-			                    {
-			                        value: 'green',
-			                        text: 'Зелёная'
-			                    },
-			                    {
-			                        value: 'white',
-			                        text: 'Белая'
-			                    },
-			                ],
-			                onchange: function() { data.class = this.value(); }
-			            }
-			        ],
-			        onSubmit: function(e) {
-			            var shortcode = '[name';
-			            data = tinymce.extend(data, e.data);
-			 
-			            shortcode += ' title="' + data.title + '"';
-			            shortcode += ' subtitle="' + data.subtitle + '"';
-			            shortcode += ' class="' + data.class + '"';
-			 
-			            shortcode += ']';
-			 
-			            tinymce.execCommand('mceInsertContent', false, shortcode);
-			        }
-			    });
-			});
+			
 
 			editor.addCommand('buttonCMD', function() {
 			    var data = {
 			        title: '',
 			        url: 'http://',
-			        class: 'red'
+			        class: ''
 			    };
 			    editor.windowManager.open({
-			        title: 'Кнопка',
+			        title: 'Button',
 			        data: data,
 			        body: [
 			            {
 			                name: 'title',
 			                type: 'textbox',
-			                label: 'Текст',
+			                label: 'Button name',
 			                value: data.title,
 			                onchange: function() { data.title = this.value(); }
 			            },
 			            {
 			                name: 'url',
 			                type: 'textbox',
-			                label: 'Ссылка',
+			                label: 'URL',
 			                value: data.url,
 			                onchange: function() { data.url = this.value(); }
 			            },
 			            {
 			                name: 'class',
-			                type: 'listbox',
-			                label: 'Стиль',
-			                values: [
-			                    {
-			                        value: 'red',
-			                        text: 'Красная'
-			                    },
-			                    {
-			                        value: 'green',
-			                        text: 'Зелёная'
-			                    },
-			                    {
-			                        value: 'white',
-			                        text: 'Белая'
-			                    },
-			                    {
-			                        value: 'guru',
-			                        text: 'Аудиогуру'
-			                    },
-			                    {
-			                        value: 'guru2',
-			                        text: 'Аудиогуру 2'
-			                    },
-			                ],
+			                type: 'textbox',
+			                label: 'Class',
+			                value: data.class,
 			                onchange: function() { data.class = this.value(); }
 			            }
 			        ],
@@ -358,4 +231,8 @@
 
 
 	});
+
+
+
+
 })();
